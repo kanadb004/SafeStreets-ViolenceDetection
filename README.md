@@ -9,7 +9,7 @@ This repository contains a real-time video-based violence detection system using
 - Usage  
 
 ## Features  
-Violence Detection: Utilizes a CNN-LSTM model to detect violent activity in surveillance videos.  
+Violence Detection: Utilizes a CNN-LSTM model to detect violent activity in surveillance videos.
 
 Web Interface: Upload videos via a clean frontend built with TailwindCSS and receive real-time feedback.  
 
