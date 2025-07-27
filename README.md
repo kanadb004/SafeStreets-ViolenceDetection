@@ -35,6 +35,6 @@ Jupyter Notebook (for training/testing pipeline)
 - Model Testing: Use the `test_predict.py` script to directly run the model on a local video file and get results.  
 - Model Training: Use the Jupyter notebook in the `model/` directory to train or retrain the CNN-LSTM model.  
 
-Violence Detection: Upload a video through the web interface. The backend processes it and returns whether violence is detected.  
+Violence Detection: Upload a video through the web interface. The backend processes it and returns whether violence is detected.COuld be further used to inform the authorities.
 Model Testing: Use the `test_predict.py` script to directly run the model on a local video file and get results.  
 Model Training: Use the Jupyter notebook in the `model/` directory to train or retrain the CNN-LSTM model. We were not able to integrate the ML model with frontend prediction display due to time constraint.
