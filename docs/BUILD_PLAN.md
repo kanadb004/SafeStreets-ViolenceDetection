@@ -101,11 +101,12 @@ XD-Violence in full, you have taken a wrong turn.
 ### 3.2 Compute: Apple M2, 16 GB unified memory, no CUDA
 
 - Baseline training (Phase 4) is expected to be **hours, not minutes**, locally. That is fine.
-- Full Optuna studies (Phase 6) and any heavy fine-tune are the phases most likely to need
-  Google Colab. Every training entry point therefore **must** run unmodified from a Colab
+- Full Optuna studies (Phase 6) remain the phase most likely to want Google Colab, for throughput
+  rather than necessity. Every training entry point therefore **must** run unmodified from a Colab
   notebook: no absolute paths, all paths from config, `--data-root` overridable by env var.
-- Phase 0 records which accelerator path actually works (`tensorflow-metal` or CPU) in an ADR.
-  Do not assume Metal works; **measure it**.
+- **Metal is confirmed working** (measured 2026-09-13 in `tf_env`): 2080 GFLOP/s on GPU vs 341 on
+  CPU, a 6.1x speedup, on a 2048³ matmul. Real conv/LSTM throughput will be lower, but local
+  training is viable. Phase 0 re-measures on the real model and records it in ADR-001.
 
 ---
 
@@ -165,7 +166,7 @@ None. This is the entry point.
 
 ### Deliverables
 - `pyproject.toml` — package `safestreets`, deps, pytest config with `phase0..phase11` markers.
-- `.python-version` → `3.12` (TF has no macOS ARM wheel for 3.13/3.14; system default is 3.14.5).
+- Conda env `safestreets`, cloned from the existing `tf_env` (see §3.2). **Do not reinstall TensorFlow.** Python 3.11.13.
 - `configs/*.yaml` + `safestreets/config.py` (typed loader; env-var override `SS_DATA_ROOT` etc.).
 - `safestreets/__init__.py`, `safestreets/utils/seed.py` (`set_global_seed(seed)`).
 - `tests/conftest.py`, `tests/test_phase00_foundation.py`.
@@ -176,12 +177,14 @@ None. This is the entry point.
 - Deleted: empty `SafeStreets/` dir. Moved: `train/train_model.ipynb` → `notebooks/legacy/`.
 
 ### The spike (do this first — it constrains Phases 4 and 9)
-TensorFlow/Keras 3 and `tf2onnx` have a known compatibility seam. Resolve it **now**, before any
-model code is written, by empirically testing in this order and recording the winner in ADR-001:
+The installed stack is **TF 2.16.2 + Keras 3.10.0**, and `tf2onnx` does not support Keras 3. This is
+a live problem, not a hypothetical. Resolve it **now**, before any model code is written, by testing
+in this order and recording the winner in ADR-001:
 
-1. Current TF + `tf2onnx` from a `SavedModel` export.
-2. TF 2.16/2.17 with `TF_USE_LEGACY_KERAS=1` + the `tf_keras` package + `tf2onnx`.
-3. Keras 3 native `model.export()` → `onnx` path.
+1. `pip install tf-keras` + `TF_USE_LEGACY_KERAS=1` + `tf2onnx` from a `SavedModel` export. Most
+   likely to work, given TF 2.16 is the last release that supports the legacy path cleanly.
+2. Keras 3 native `model.export("...")` → `tf2onnx.convert --saved-model`.
+3. Downgrade to TF 2.15 in a separate env used only for export.
 
 Test with a 30-second throwaway script: build a tiny TimeDistributed(Conv2D)+LSTM model, export to
 ONNX, load in `onnxruntime`, assert outputs match Keras within `1e-4`. **Whichever works, pin those
@@ -196,7 +199,7 @@ exact versions in `pyproject.toml` and write them into ADR-001.** Also record in
   anything requiring downloaded datasets or a GPU.
 
 ### Definition of Done
-- [ ] `python -c "import safestreets; print(safestreets.__version__)"` succeeds in a clean venv created from `pyproject.toml` alone.
+- [ ] `conda create -n safestreets --clone tf_env` succeeds and `python -c "import tensorflow, safestreets"` works inside it, with `tf_env` left unmodified.
 - [ ] `safestreets.config.load_config()` returns a typed object; changing `configs/data.yaml` changes the returned value; `SS_DATA_ROOT=/tmp/x` overrides it.
 - [ ] `set_global_seed(1265)` makes two successive `numpy` + framework RNG draws identical across processes.
 - [ ] `pytest -m phase0` passes with ≥ 4 real assertions (not `assert True`).
@@ -873,8 +876,8 @@ The root `CLAUDE.md` should tell a cold session exactly this:
 |---|---|---|---|---|
 | R1 | Dataset access blocked (RWF-2000 form, Kaggle auth) | High | High | Phase 1 marks `BLOCKED` and proceeds with available sources; plan tolerates a subset |
 | R2 | Disk exhaustion (44 GB free) | High | High | §3.1 budget; cache-then-purge; never fetch raw UCF-Crime/XD-Violence in full |
-| R3 | `tf2onnx` × Keras 3 incompatibility | Medium | High | ADR-001 spike in Phase 0, **before** model code exists |
-| R4 | M2 too slow for a real Optuna study | High | Medium | Pruning + subsampling + SQLite resume; Colab escape hatch; all entry points path-agnostic |
+| R3 | `tf2onnx` × Keras 3 incompatibility | **Confirmed live** (TF 2.16.2 + Keras 3.10) | High | ADR-001 spike in Phase 0, **before** model code exists |
+| R4 | M2 too slow for a real Optuna study | Medium (Metal confirmed, 6.1x over CPU) | Medium | Pruning + subsampling + SQLite resume; Colab escape hatch; all entry points path-agnostic |
 | R5 | Split leakage inflating every metric | Medium | **Critical** | Group-aware splits (Phase 1) + an explicit disjointness assertion in tests |
 | R6 | `val_auc` stuck near 0.5 | Medium | High | Phase 4's 32-clip overfit test and label-alignment test catch this in minutes, not days |
 | R7 | Real-time target unreachable on CPU | Medium | Medium | Lightweight backbone, lower resolution, larger stride; record the trade honestly |

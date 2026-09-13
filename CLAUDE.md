@@ -177,6 +177,36 @@ unmeasured numbers.
 
 ## Environment
 
-macOS, Apple M2, 16 GB unified memory, no CUDA. Python 3.12 (system default is 3.14 — TF has no
-wheel for it). Heavy phases (4, 6, 7) may need Colab: keep every entry point path-agnostic and
-config-driven so it runs there unmodified.
+macOS, Apple M2, 16 GB unified memory, no CUDA.
+
+**Do not build a Python environment from scratch.** Conda env `tf_env` already has the expensive
+parts installed:
+
+| | |
+|---|---|
+| `tf_env` | Python 3.11.13, tensorflow 2.16.2, tensorflow-metal 1.2.0, keras 3.10.0, tensorboard 2.16.2, h5py, numpy, scikit-learn, matplotlib |
+| `base` | Python 3.12.7, **no TensorFlow**. Has numpy, pandas, pyarrow, scikit-learn, h5py, flask, matplotlib, pytest. Not the ML env. |
+
+Phase 0 clones `tf_env` rather than reinstalling, which avoids redownloading TensorFlow and Metal:
+
+```bash
+conda create -n safestreets --clone tf_env
+```
+
+Then pip installs only what is missing: `pandas pyarrow pyyaml flask pytest ruff opencv-python-headless
+albumentations optuna mlflow onnx onnxruntime tf2onnx ultralytics`. Leave `tf_env` itself untouched,
+other projects use it.
+
+Metal is confirmed working, measured 2026-09-13:
+
+```
+/GPU:0   2080 GFLOP/s     10x 2048^3 matmul
+/CPU:0    341 GFLOP/s     6.1x slower
+```
+
+So local training is viable. Heavy phases (4, 6) may still want Colab for throughput, so keep every
+entry point path agnostic and config driven.
+
+**Known seam:** TF 2.16.2 ships Keras 3.10, and `tf2onnx` does not support Keras 3. ADR-001 in
+Phase 0 resolves this, most likely by installing `tf-keras` and setting `TF_USE_LEGACY_KERAS=1`.
+Verify, do not assume.
