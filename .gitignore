@@ -6,3 +6,9 @@ footages/
 *.mp4
 .DS_Store
 logs/
+*.egg-info/
+.pytest_cache/
+data/
+artifacts/
+mlruns/
+.ruff_cache/

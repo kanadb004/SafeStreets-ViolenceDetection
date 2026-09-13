@@ -1,0 +1,5 @@
+data_root: data
+manifests_dir: data/manifests
+cache_dir: data/cache
+raw_dir: data/raw
+seed: 1265

@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "safestreets"
+version = "0.1.0"
+description = "Real-time violence-detection pipeline (CNN-LSTM) for a women's-safety CCTV context"
+requires-python = ">=3.11,<3.12"
+readme = "README.md"
+dependencies = [
+    "numpy<2.0",
+    "pandas",
+    "pyarrow",
+    "pyyaml",
+    "flask",
+    "opencv-python-headless==4.9.0.80",
+    "scikit-learn",
+    "h5py",
+    "matplotlib",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+]
+# See docs/decisions/ADR-001-runtime-stack.md for why these exact versions.
+ml = [
+    "tensorflow-macos==2.16.2",
+    "tensorflow-metal==1.2.0",
+    "tf-keras==2.16.*",
+    "ml_dtypes~=0.3.1",
+    "onnx==1.16.1",
+    "onnxruntime==1.18.1",
+    "tf2onnx==1.17.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["safestreets*"]
+
+[tool.pytest.ini_options]
+markers = [
+    "phase0: Phase 0 - foundation",
+    "phase1: Phase 1 - datasets, manifests, splits",
+    "phase2: Phase 2 - preprocessing / clip cache",
+    "phase3: Phase 3 - augmentation + tf.data pipeline",
+    "phase4: Phase 4 - model + training + MLflow/TensorBoard",
+    "phase5: Phase 5 - evaluation harness",
+    "phase6: Phase 6 - Optuna HPO",
+    "phase7: Phase 7 - AIRTLab fine-tuning",
+    "phase8: Phase 8 - person + gender attribution",
+    "phase9: Phase 9 - ONNX export + streaming inference",
+    "phase10: Phase 10 - Flask application rebuild",
+    "phase11: Phase 11 - packaging, reproducibility, reporting",
+    "slow: slow-running tests, skipped in normal CI",
+    "needs_data: requires downloaded datasets, skipped in normal CI",
+]
+addopts = "--strict-markers"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+# Legacy code untouched until Phase 10/11 rewrite it (see CLAUDE.md "Known defects").
+extend-exclude = ["app", "test", "notebooks/legacy", "train"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
