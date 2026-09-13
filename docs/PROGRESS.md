@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-09-13 · by: phase-0 session · commit: `1d62644`
+Last updated: 2026-09-13 · by: phase-1 session · commit: pending PR (branch `phase/01-datasets-manifests-splits`)
 
 ---
 
@@ -15,7 +15,7 @@ Last updated: 2026-09-13 · by: phase-0 session · commit: `1d62644`
 | # | Phase | Status | Exit gate run? | Session notes |
 |---|-------|--------|----------------|---------------|
 | 0 | Foundation: env, packaging, config, CI | `DONE` | ✓ | env pinned per ADR-001, PR pending |
-| 1 | Datasets, manifests, leakage-safe splits | `NOT_STARTED` | ✗ | — |
+| 1 | Datasets, manifests, leakage-safe splits | `DONE` | ✓ | XD-Violence BLOCKED, see docs/DATASETS.md; PR pending |
 | 2 | Preprocessing → clip cache | `NOT_STARTED` | ✗ | — |
 | 3 | Augmentation + `tf.data` pipeline | `NOT_STARTED` | ✗ | — |
 | 4 | Model + training + MLflow + TensorBoard | `NOT_STARTED` | ✗ | — |
@@ -94,6 +94,68 @@ Surprises / notes for the next session:
   numpy, ml_dtypes, or opencv should re-pin against ADR-001's table afterward; the resolver will
   silently drift them otherwise.
 
+### Phase 1 — Datasets, manifests, leakage-safe splits
+Completed: 2026-09-13 · commit: pending PR (branch `phase/01-datasets-manifests-splits`)
+Exit gate: `make verify PHASE=1`
+Exit code: 0
+
+```
+ruff check . && pytest -m phase1 -q
+All checks passed!
+.................                                                        [100%]
+17 passed, 4 deselected in 185.75s (0:03:05)
+```
+
+Full guard including Phase 0 (`pytest -m "phase0 or phase1" -q`):
+```
+.....................                                                    [100%]
+21 passed in 240.59s (0:04:00)
+```
+
+Idempotency (`python scripts/fetch_data.py --dataset rwf2000` run twice):
+```
+( conda run -n safestreets python scripts/fetch_data.py --dataset rwf2000; )   1.39s user 0.33s system 84% cpu 2.033 total
+```
+
+Manifest build (`python -m safestreets.data.manifest`), 4336 rows:
+```
+dataset     train  val  test    train%  val%  test%
+airtlab       242   60    48     69.1  17.1  13.7
+rlvs         1404  274   273     72.0  14.0  14.0
+rwf2000      1600  400     0     80.0  20.0   0.0   (official split, no test — see ADR-002)
+ucfcrime       24    6     5     68.6  17.1  14.3
+```
+Leakage assertion (`set(train.group_id) & set(val.group_id) & set(test.group_id)`), all four
+datasets: empty. `clips.parquet`: 4336 rows, 0 null labels, 0 duplicate clip_id, 100% of paths
+exist on disk. Two consecutive `build_manifest()` runs produced a byte-identical `splits.json`
+(verified both by an md5 diff and by `tests/test_phase01_manifest.py::test_manifest_rebuild_is_byte_identical`).
+
+DoD checklist: 9/9 met
+Deviations from plan: RWF-2000 uses its official train/val split verbatim and contributes no rows
+to `test` (recorded in ADR-002, not treated as a Phase 1 DoD failure since the ±3pp tolerance
+target is met by every dataset that uses hash-based bucketing). RLVS's `group_id` comes from a
+content near-duplicate heuristic (average-hash of the middle frame + duration) rather than
+filename parsing, because this Kaggle re-hosting's filenames (`V_<n>.mp4`/`NV_<n>.mp4`) carry no
+source-video id. AIRTLab's `group_id` groups by (label, clip_number) rather than camera folder,
+since cam1/cam2 are two views of the same event per the dataset's own readme. UCF-Crime's Robbery
+category (absent from the small mirror used for the other four categories) was streamed
+file-by-file from a second, larger mirror via `kaggle datasets download -f`, never downloading
+that mirror in full. All four decisions are recorded in ADR-002.
+Surprises / notes for the next session:
+- The RLVS Kaggle mirror's zip nests a second, byte-identical copy of the whole dataset under
+  `real life violence situations/`; `fetch_rlvs` deletes it. If re-downloading fresh, check for
+  this duplicate again in case the mirror's zip layout changes.
+- RWF-2000 filenames collide across labels: the same source-video id can have both a Fight- and a
+  NonFight-labelled segment sharing the same segment index (e.g. `-1l5631l3fg_0` under both
+  `Fight/` and `NonFight/`). `clip_id` includes the label folder name to stay unique; `group_id`
+  does not, so both labelled segments of one source video are still grouped together.
+- XD-Violence is `BLOCKED`: the only official distributions (a Xidian University OneDrive share
+  and a Baidu Netdisk share) both need an interactive browser session or an account this project
+  doesn't have. Manual steps are in `docs/DATASETS.md`. Phase 5's frame-level AUC work will need
+  this fetched by hand before it can run.
+- `manifest.py`'s OpenCV probe pass takes ~100s for the current 4336 clips (~25ms/clip); expect
+  this to scale roughly linearly if later phases add more sources to the manifest.
+
 ### Template
 
 ```
@@ -116,7 +178,7 @@ Surprises / notes for the next session:
 
 | Item | Phase | Blocked on | Needs the user? |
 |---|---|---|---|
-| *(none yet)* | | | |
+| XD-Violence I3D features | 1, 5 | Manual browser download from OneDrive/Baidu, see docs/DATASETS.md | Yes |
 
 ---
 
@@ -125,7 +187,7 @@ Surprises / notes for the next session:
 | ADR | Title | Status |
 |---|---|---|
 | 001 | Runtime stack: TF / Keras / tf2onnx / ORT versions | accepted (Phase 0) |
-| 002 | Dataset split strategy and grouping keys | pending (Phase 1) |
+| 002 | Dataset split strategy and grouping keys | accepted (Phase 1) |
 | 003 | Architecture defaults | pending (Phase 4) |
 | 004 | HPO budget and search space | pending (Phase 6) |
 | 005 | Fine-tuning + checkpoint selection | pending (Phase 7) |
