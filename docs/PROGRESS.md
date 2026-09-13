@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-09-13 · by: phase-1 session · commit: pending PR (branch `phase/01-datasets-manifests-splits`)
+Last updated: 2026-09-13 · by: phase-1 session · commit: `6280d9b`
 
 ---
 
@@ -15,7 +15,7 @@ Last updated: 2026-09-13 · by: phase-1 session · commit: pending PR (branch `p
 | # | Phase | Status | Exit gate run? | Session notes |
 |---|-------|--------|----------------|---------------|
 | 0 | Foundation: env, packaging, config, CI | `DONE` | ✓ | env pinned per ADR-001, PR pending |
-| 1 | Datasets, manifests, leakage-safe splits | `DONE` | ✓ | XD-Violence SKIPPED (38.3 GB, over budget), see docs/DATASETS.md |
+| 1 | Datasets, manifests, leakage-safe splits | `DONE` | ✓ | merged; XD-Violence SKIPPED (38.3 GB, over budget), see docs/DATASETS.md |
 | 2 | Preprocessing → clip cache | `NOT_STARTED` | ✗ | — |
 | 3 | Augmentation + `tf.data` pipeline | `NOT_STARTED` | ✗ | — |
 | 4 | Model + training + MLflow + TensorBoard | `NOT_STARTED` | ✗ | — |
@@ -95,7 +95,7 @@ Surprises / notes for the next session:
   silently drift them otherwise.
 
 ### Phase 1 — Datasets, manifests, leakage-safe splits
-Completed: 2026-09-13 · commit: pending PR (branch `phase/01-datasets-manifests-splits`)
+Completed: 2026-09-13 · commit: `6280d9b`
 Exit gate: `make verify PHASE=1`
 Exit code: 0
 
