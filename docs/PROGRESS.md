@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-09-13 · by: phase-2 session · commit: `<pending>`
+Last updated: 2026-09-13 · by: phase-2 session · commit: `1232c08`
 
 ---
 
@@ -16,7 +16,7 @@ Last updated: 2026-09-13 · by: phase-2 session · commit: `<pending>`
 |---|-------|--------|----------------|---------------|
 | 0 | Foundation: env, packaging, config, CI | `DONE` | ✓ | env pinned per ADR-001, PR pending |
 | 1 | Datasets, manifests, leakage-safe splits | `DONE` | ✓ | merged; XD-Violence SKIPPED (38.3 GB, over budget), see docs/DATASETS.md |
-| 2 | Preprocessing → clip cache | `DONE` | ✓ | merged; PR pending; RLVS drops 4 unreadable clips |
+| 2 | Preprocessing → clip cache | `DONE` | ✓ | merged; RLVS drops 4 unreadable clips |
 | 3 | Augmentation + `tf.data` pipeline | `NOT_STARTED` | ✗ | — |
 | 4 | Model + training + MLflow + TensorBoard | `NOT_STARTED` | ✗ | — |
 | 5 | Evaluation harness | `NOT_STARTED` | ✗ | — |
@@ -159,7 +159,7 @@ Surprises / notes for the next session:
   this to scale roughly linearly if later phases add more sources to the manifest.
 
 ### Phase 2 — Preprocessing → compact clip cache
-Completed: 2026-09-13 · commit: `<pending>`
+Completed: 2026-09-13 · commit: `1232c08`
 Exit gate: `make verify PHASE=2`
 Exit code: 0
 
