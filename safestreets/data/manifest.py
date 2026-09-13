@@ -52,7 +52,13 @@ def _probe_video(path: Path) -> dict:
     finally:
         cap.release()
     duration_s = n_frames / fps if fps > 0 else 0.0
-    return {"n_frames": n_frames, "fps": fps, "width": width, "height": height, "duration_s": duration_s}
+    return {
+        "n_frames": n_frames,
+        "fps": fps,
+        "width": width,
+        "height": height,
+        "duration_s": duration_s,
+    }
 
 
 def _average_hash(path: Path) -> str | None:

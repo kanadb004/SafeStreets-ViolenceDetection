@@ -149,10 +149,12 @@ Surprises / notes for the next session:
   NonFight-labelled segment sharing the same segment index (e.g. `-1l5631l3fg_0` under both
   `Fight/` and `NonFight/`). `clip_id` includes the label folder name to stay unique; `group_id`
   does not, so both labelled segments of one source video are still grouped together.
-- XD-Violence is `BLOCKED`: the only official distributions (a Xidian University OneDrive share
-  and a Baidu Netdisk share) both need an interactive browser session or an account this project
-  doesn't have. Manual steps are in `docs/DATASETS.md`. Phase 5's frame-level AUC work will need
-  this fetched by hand before it can run.
+- XD-Violence is permanently `SKIPPED`, not just credential-blocked: its official OneDrive release
+  (`i3d-features.zip`) was checked manually in a browser and is **38.3 GB**, far past BUILD_PLAN
+  §3.1's ~4 GB estimate and the project's ~44 GB disk budget. The Baidu Netdisk alternative needs
+  an account this project doesn't have and would carry the same size problem regardless. It only
+  fed Phase 5's supplementary cross-dataset/frame-level AUC, so this does not block any other
+  phase; Phase 5 should proceed without an XD-Violence-derived metric. See `docs/DATASETS.md`.
 - `manifest.py`'s OpenCV probe pass takes ~100s for the current 4336 clips (~25ms/clip); expect
   this to scale roughly linearly if later phases add more sources to the manifest.
 
@@ -178,7 +180,7 @@ Surprises / notes for the next session:
 
 | Item | Phase | Blocked on | Needs the user? |
 |---|---|---|---|
-| XD-Violence I3D features | 1, 5 | Manual browser download from OneDrive/Baidu, see docs/DATASETS.md | Yes |
+| XD-Violence I3D features | 1, 5 | Official release confirmed 38.3 GB, exceeds disk budget; permanently skipped, see docs/DATASETS.md | No (decided) |
 
 ---
 

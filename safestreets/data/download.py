@@ -122,7 +122,12 @@ def fetch_airtlab(raw_dir: Path, force: bool = False) -> Path:
 # streamed file-by-file from the full mirror via `kaggle datasets download -f`,
 # which pulls only the named file, not the whole multi-GB dataset.
 _UCF_MINI_REF = "shashiprakash204/ucfcrimeminidataset"
-_UCF_MINI_CATEGORIES = {"Abuse": "Abuse", "Assault": "Assault", "Fighting": "Fighting", "Normal": "normal"}
+_UCF_MINI_CATEGORIES = {
+    "Abuse": "Abuse",
+    "Assault": "Assault",
+    "Fighting": "Fighting",
+    "Normal": "normal",
+}
 _UCF_FULL_REF = "bypktt/ucf-crimes"
 _UCF_FULL_ROOT = "Real-world Anomaly Detection in Surveillance Videos (UCF)"
 _UCF_ROBBERY_FILES = [f"Robbery{i:03d}_x264.mp4" for i in (1, 2, 3, 4, 5, 6, 7)]
@@ -181,14 +186,17 @@ def fetch_ucfcrime(raw_dir: Path, force: bool = False) -> Path:
 def fetch_xdviolence(raw_dir: Path, force: bool = False) -> Path:
     """Official pre-extracted I3D RGB+Flow features, never raw video (§3.1).
 
-    Blocked: the only official distribution is a OneDrive share
-    (stuxidianeducn-my.sharepoint.com, Xidian University tenant) that requires
-    interactive browser sign-in to complete the SharePoint anonymous-link
-    handshake, or a Baidu Netdisk share needing a Baidu account and the
-    extraction keyword "ou1n". Neither is scriptable with the credentials this
-    project has. See docs/DATASETS.md for the manual steps.
+    Permanently skipped: the OneDrive distribution
+    (stuxidianeducn-my.sharepoint.com, Xidian University tenant) was checked
+    manually in a browser and is 38.3 GB, far past BUILD_PLAN §3.1's ~4 GB
+    estimate and the project's ~44 GB total disk budget. The OneDrive link
+    also rejects a scripted download (403 + forms-based-auth redirect on the
+    anonymous-link handshake); the Baidu Netdisk alternative needs an account
+    this project doesn't have and would carry the same size problem. See
+    docs/DATASETS.md for the full writeup.
     """
     raise DatasetBlockedError(
-        "XD-Violence I3D features are BLOCKED: no scriptable credential path. "
-        "See docs/DATASETS.md for manual download steps."
+        "XD-Violence I3D features are SKIPPED: the official release is 38.3 GB "
+        "(confirmed), which does not fit the project's disk budget. "
+        "See docs/DATASETS.md for details."
     )

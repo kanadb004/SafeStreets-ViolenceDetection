@@ -62,25 +62,32 @@ for how `group_id` and `split` are derived.
   source) feeding Phase 5's cross-dataset and frame-level evaluation, not the primary CNN-LSTM
   training pool.
 
-## XD-Violence — BLOCKED
+## XD-Violence — SKIPPED (does not fit the disk budget)
 
-- **What's needed:** the official pre-extracted I3D RGB+Flow features (never raw video —
-  raw XD-Violence is comparable in size to raw UCF-Crime and does not fit the 44 GB disk budget,
-  BUILD_PLAN §3.1).
-- **Why it's blocked:** the project page (https://roc-ng.github.io/XD-Violence/) offers exactly
-  two distributions, neither scriptable with the credentials available to this project:
+- **What was needed:** the official pre-extracted I3D RGB+Flow features (never raw video — raw
+  XD-Violence is comparable in size to raw UCF-Crime and does not fit the 44 GB disk budget,
+  BUILD_PLAN §3.1). BUILD_PLAN §3.1 estimated this at ~4 GB.
+- **Why it's skipped:** the project page (https://roc-ng.github.io/XD-Violence/) offers exactly
+  two distributions:
   - **OneDrive:** `https://stuxidianeducn-my.sharepoint.com/:u:/g/personal/pengwu_stu_xidian_edu_cn/EYcpIgLj2TxKhlPlWcfjsZ4Bbe5tz7AbqH_eP3ZzM6Ul-Q` —
-    a SharePoint "anyone with the link" share on the Xidian University tenant. It resolves fine in
-    a browser but rejects a scripted `curl`/session download with a 403 and a forms-based-auth
-    redirect (the anonymous-link handshake needs a real browser session, not just the link).
+    a SharePoint "anyone with the link" share on the Xidian University tenant. It rejects a
+    scripted `curl`/session download with a 403 and a forms-based-auth redirect (the anonymous-link
+    handshake needs a real browser session), so this project fetched it manually in a browser to
+    check the actual size: **`i3d-features.zip` is 38.3 GB**, nowhere near BUILD_PLAN's ~4 GB
+    estimate and far beyond what the ~44 GB disk budget can absorb alongside the other four
+    sources (§3.1's steady-state target is ~12 GB total). It was not downloaded onto this machine.
   - **Baidu Netdisk:** listed with extraction keyword `ou1n`; requires a Baidu account, which this
-    project has no credentials for.
-- **Manual steps to unblock:** open the OneDrive link above in a logged-in browser, download
-  `i3d-features.zip`, and place its contents under `data/raw/xdviolence/`. Confirm the extracted
-  size against the ~44 GB disk budget before extracting (BUILD_PLAN estimates ~4 GB, but this was
-  not independently confirmed since the download itself was never completed).
-- **Status:** `BLOCKED` in `docs/PROGRESS.md`. `safestreets/data/download.py:fetch_xdviolence`
-  raises `DatasetBlockedError` with this same message rather than silently skipping or fabricating
-  a result.
+    project has no credentials for, and would carry the same 38.3 GB size problem regardless.
+  - The estimate mismatch is likely because the release bundles both RGB *and* Flow I3D features
+    (and possibly per-frame rather than per-segment features) rather than the smaller
+    single-stream feature set BUILD_PLAN's §3.1 sizing assumed.
+- **Decision:** permanently skip XD-Violence for this project. It fed only Phase 5's
+  cross-dataset and frame-level AUC (a supplementary evaluation, not the CNN-LSTM training pool),
+  so skipping it does not block any other phase. If a future session needs it, this would require
+  either raising the disk budget (unlikely to be worthwhile for one dataset) or finding a
+  same-content mirror that is genuinely feature-only and closer to the original size estimate.
+- **Status:** `BLOCKED` (permanent) in `docs/PROGRESS.md`. `safestreets/data/download.py:fetch_xdviolence`
+  raises `DatasetBlockedError` explaining the size, rather than silently skipping or fabricating a
+  result.
 - **Citation:** P. Wu et al., "Not only Look, but also Listen: Learning Multimodal Violence
   Detection under Weak Supervision," ECCV 2020.
