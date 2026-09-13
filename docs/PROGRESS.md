@@ -15,7 +15,7 @@ Last updated: 2026-09-13 · by: phase-1 session · commit: pending PR (branch `p
 | # | Phase | Status | Exit gate run? | Session notes |
 |---|-------|--------|----------------|---------------|
 | 0 | Foundation: env, packaging, config, CI | `DONE` | ✓ | env pinned per ADR-001, PR pending |
-| 1 | Datasets, manifests, leakage-safe splits | `DONE` | ✓ | XD-Violence BLOCKED, see docs/DATASETS.md; PR pending |
+| 1 | Datasets, manifests, leakage-safe splits | `DONE` | ✓ | XD-Violence SKIPPED (38.3 GB, over budget), see docs/DATASETS.md |
 | 2 | Preprocessing → clip cache | `NOT_STARTED` | ✗ | — |
 | 3 | Augmentation + `tf.data` pipeline | `NOT_STARTED` | ✗ | — |
 | 4 | Model + training + MLflow + TensorBoard | `NOT_STARTED` | ✗ | — |

@@ -86,7 +86,7 @@ for how `group_id` and `split` are derived.
   so skipping it does not block any other phase. If a future session needs it, this would require
   either raising the disk budget (unlikely to be worthwhile for one dataset) or finding a
   same-content mirror that is genuinely feature-only and closer to the original size estimate.
-- **Status:** `BLOCKED` (permanent) in `docs/PROGRESS.md`. `safestreets/data/download.py:fetch_xdviolence`
+- **Status:** `SKIPPED` (permanent) in `docs/PROGRESS.md`. `safestreets/data/download.py:fetch_xdviolence`
   raises `DatasetBlockedError` explaining the size, rather than silently skipping or fabricating a
   result.
 - **Citation:** P. Wu et al., "Not only Look, but also Listen: Learning Multimodal Violence
