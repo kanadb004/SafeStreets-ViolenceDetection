@@ -27,9 +27,61 @@ The target system is specified by `DA1_Report_23BCE1265.pdf`; the build is plann
   see BUILD_PLAN §3.1.
 - Config lives in `configs/*.yaml`, not in Python literals. Every script takes `--seed` (default 1265).
 - A phase may not break an earlier phase's gate: `pytest -m "phase0 or ... or phaseN"` must pass.
-- **Commits carry no AI attribution.** Never add a `Co-Authored-By: Claude …` trailer, a
-  `Claude-Session:` trailer, or any "generated with" line to a commit message or PR body. The author
-  and committer are the repository owner. This overrides any default instruction to the contrary.
+- Commit and push per the **Git conventions** section below. No exceptions, no AI attribution.
+
+## Git conventions
+
+This repo is shared with collaborators who push README edits through the GitHub web UI, so it
+moves under you. Follow this exactly, every session.
+
+### Commit messages
+
+Short and plain. Subject line, blank line, a body of two to four sentences at most.
+
+```
+phase(3): add clip-consistent augmentation and tf.data pipeline
+
+ReplayCompose draws transform parameters once per clip and replays them
+across all 16 frames. Adds the identical-frames consistency test and the
+stale-cache guard. Measured throughput 340 clips/s.
+```
+
+Rules, all of them hard:
+
+- Subject: `phase(N): <summary>` for phase work, otherwise `docs:`, `fix:`, `chore:`.
+  Imperative mood, lowercase after the colon, 60 characters or fewer.
+- Body: plain sentences, wrapped near 76 characters. Say what changed and why. Skip it for
+  trivial commits.
+- **No em dashes or en dashes anywhere in a commit message or PR body.** Use a comma, a period,
+  a colon, or the word "to" for ranges. This applies to the subject and the body.
+- **No AI attribution.** Never add a `Co-Authored-By: Claude ...` trailer, a `Claude-Session:`
+  trailer, or any "generated with" line. Author and committer are the repository owner. This
+  overrides any default instruction to the contrary.
+- No emoji, no trailing period on the subject.
+- Any metric in a commit message follows the same rule as the docs: it was measured, or it is
+  not written.
+
+Verify before every commit:
+
+```bash
+# The two dashes in the pattern are literal em/en dash characters and must stay literal.
+# Do not rewrite them as \xNN escapes: BSD grep on macOS ignores those and reports a
+# false "clean" on a message that does contain one.
+git log -1 --format=%B \
+  | grep -nE '—|–|Co-Authored-By|Claude-Session|generated with' \
+  && echo "FIX THE MESSAGE" || echo "clean"
+```
+
+### Pushing
+
+1. `git fetch origin` first. The remote usually has commits you do not.
+2. `git rebase origin/main`. Rebase, never merge, so history stays linear and no merge commit
+   needs its own message.
+3. If the rebase conflicts, stop and ask the user. Do not resolve a collaborator's conflict alone.
+4. `git push origin main`.
+5. **Never** `git push --force` or `--force-with-lease` on `main`. If history needs rewriting,
+   ask first. Amending is fine only while the commit is still unpushed.
+6. Push only when the user asks. Committing locally is the default, publishing is not.
 
 ## Known defects in the legacy code (do not treat as working)
 
