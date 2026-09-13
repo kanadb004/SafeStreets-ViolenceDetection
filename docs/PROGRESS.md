@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-09-13 · by: phase-1 session · commit: `6280d9b`
+Last updated: 2026-09-13 · by: phase-2 session · commit: `<pending>`
 
 ---
 
@@ -16,7 +16,7 @@ Last updated: 2026-09-13 · by: phase-1 session · commit: `6280d9b`
 |---|-------|--------|----------------|---------------|
 | 0 | Foundation: env, packaging, config, CI | `DONE` | ✓ | env pinned per ADR-001, PR pending |
 | 1 | Datasets, manifests, leakage-safe splits | `DONE` | ✓ | merged; XD-Violence SKIPPED (38.3 GB, over budget), see docs/DATASETS.md |
-| 2 | Preprocessing → clip cache | `NOT_STARTED` | ✗ | — |
+| 2 | Preprocessing → clip cache | `DONE` | ✓ | merged; PR pending; RLVS drops 4 unreadable clips |
 | 3 | Augmentation + `tf.data` pipeline | `NOT_STARTED` | ✗ | — |
 | 4 | Model + training + MLflow + TensorBoard | `NOT_STARTED` | ✗ | — |
 | 5 | Evaluation harness | `NOT_STARTED` | ✗ | — |
@@ -157,6 +157,75 @@ Surprises / notes for the next session:
   phase; Phase 5 should proceed without an XD-Violence-derived metric. See `docs/DATASETS.md`.
 - `manifest.py`'s OpenCV probe pass takes ~100s for the current 4336 clips (~25ms/clip); expect
   this to scale roughly linearly if later phases add more sources to the manifest.
+
+### Phase 2 — Preprocessing → compact clip cache
+Completed: 2026-09-13 · commit: `<pending>`
+Exit gate: `make verify PHASE=2`
+Exit code: 0
+
+```
+ruff check . && pytest -m phase2 -q
+All checks passed!
+...............                                                          [100%]
+15 passed, 21 deselected in 3.19s
+```
+
+Full guard including Phase 0/1 (`pytest -m "phase0 or phase1 or phase2" -q`):
+```
+....................................                                     [100%]
+36 passed in 270.74s (0:04:30)
+```
+
+Cache build (`python scripts/build_cache.py --dataset all --split all --workers 6`), 4336 manifest rows:
+```
+airtlab/test: wrote 48, skipped 0, 28.9 MB, 206.1s -> data/cache/airtlab_test.h5
+airtlab/train: wrote 242, skipped 0, 145.7 MB, 1100.5s -> data/cache/airtlab_train.h5
+airtlab/val: wrote 60, skipped 0, 36.1 MB, 218.0s -> data/cache/airtlab_val.h5
+rlvs/test: wrote 272, skipped 1, 163.8 MB, 111.8s -> data/cache/rlvs_test.h5
+rlvs/train: wrote 1402, skipped 2, 844.3 MB, 539.2s -> data/cache/rlvs_train.h5
+rlvs/val: wrote 273, skipped 1, 164.4 MB, 138.7s -> data/cache/rlvs_val.h5
+rwf2000/train: wrote 1600, skipped 0, 963.5 MB, 186.7s -> data/cache/rwf2000_train.h5
+rwf2000/val: wrote 400, skipped 0, 240.9 MB, 52.4s -> data/cache/rwf2000_val.h5
+ucfcrime/test: wrote 5, skipped 0, 3.0 MB, 2.9s -> data/cache/ucfcrime_test.h5
+ucfcrime/train: wrote 24, skipped 0, 14.5 MB, 7.6s -> data/cache/ucfcrime_train.h5
+ucfcrime/val: wrote 6, skipped 0, 3.6 MB, 3.6s -> data/cache/ucfcrime_val.h5
+```
+4332 written + 4 skipped (all `unreadable_frame`, RLVS: `rlvs_NV_357`, `rlvs_V_8`, `rlvs_NV_360`,
+`rlvs_NV_362`) == 4336 manifest rows. Total `data/cache` size: 2.4 GB (`du -sh data/cache`); `df -h`
+still shows 30 GB free. `h5['clips'].shape[1:] == (16, 112, 112, 3)`, `dtype == uint8` in every file.
+
+Idempotency (`python scripts/build_cache.py --dataset all --split all --workers 6` run again,
+cache already built):
+```
+airtlab/test: up to date (data/cache/airtlab_test.h5), skipping
+... (all 11 dataset/split combos skip)
+conda run -n safestreets python scripts/build_cache.py --dataset all --split ...   2.38s user 0.93s system 109% cpu 3.033 total
+```
+
+Contact sheet: `artifacts/figures/sample_clips.png` rendered and visually confirmed, natural colour
+(no BGR/RGB swap), correct upright orientation, letterbox padding visible on portrait-orientation
+clips, frames spanning visible motion across each clip's duration (not stuck on the first frame).
+
+DoD checklist: 10/10 met
+Deviations from plan: none. The 4 RLVS clips OpenCV cannot decode a frame from are logged in
+`cache_report.json` with `reason: unreadable_frame` and excluded from all three RLVS `.h5` files,
+per the "skip and log, never write a zeros clip" rule; not a leakage or split-balance concern since
+they are dropped uniformly, not filtered by label.
+Surprises / notes for the next session:
+- A handful of RLVS source files throw `ffmpeg`/OpenCV H.264 decode warnings
+  (`mb_type 104 in P slice too large`) on specific frames; most still decode fine overall, but 4
+  clips fail outright on every sampled frame and are skipped. If Phase 3/4 numbers look off for
+  RLVS specifically, this is a known, logged gap, not a pipeline bug.
+- AIRTLab's `train` split took ~18 minutes of the ~40-minute total build (1100s for 242 clips,
+  ~4.5s/clip) despite 6 worker processes — its source videos are long, high-resolution (per-clip
+  cost scales with source `n_frames` since every sampled index needs a fresh
+  `cv2.set(CAP_PROP_POS_FRAMES)` seek). Expect Phase 6 (HPO, many training runs) to reuse this
+  cache rather than rebuild it — a full `--dataset all --split all` rebuild is the ~40-minute
+  number to budget against, not a per-run cost.
+- `--purge-raw` was not exercised this session (disk had headroom: 30 GB free after the cache
+  build, comfortably above the 15 GB DoD floor) so raw video is still on disk for all four
+  datasets. It re-reads and verifies each committed clip before deleting its source file; exercise
+  it in a later phase if disk pressure returns.
 
 ### Template
 
