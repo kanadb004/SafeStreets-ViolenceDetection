@@ -25,6 +25,15 @@ dev = [
     "pytest",
     "ruff",
 ]
+# Portable (non-macOS) stand-ins for the `ml` extra below, just enough to run
+# Phase 3+'s tf.data/Albumentations tests in CI (ubuntu-latest). `tensorflow-macos`/
+# `tensorflow-metal` have no Linux wheels, so CI cannot install `ml` as pinned;
+# plain `tensorflow` has a Linux wheel for the same 2.16.2 release and CI never
+# needs Metal or the ONNX export chain. See docs/decisions/ADR-001-runtime-stack.md.
+ci = [
+    "tensorflow==2.16.2",
+    "albumentations==2.0.8",
+]
 # See docs/decisions/ADR-001-runtime-stack.md for why these exact versions.
 ml = [
     "tensorflow-macos==2.16.2",
