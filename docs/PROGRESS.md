@@ -286,6 +286,17 @@ Surprises / notes for the next session:
 - `GaussNoise(noise_scale_factor=0.25)` generates noise at a coarser resolution and upsamples it;
   chosen for throughput, visually indistinguishable at 112x112 in the rendered figure, but not
   independently verified against the report's §4.2 intent beyond "still visibly noisy."
+- The merge to `main` broke CI (`.github/workflows/ci.yml` only ever ran `pip install -e ".[dev]"`,
+  which has no TensorFlow, so `tests/test_phase03_pipeline.py` failed to collect with
+  `ModuleNotFoundError: No module named 'tensorflow'`; the local gate never caught this because the
+  `safestreets` conda env already has TensorFlow installed). The `ml` extra can't fix it either,
+  since it pins `tensorflow-macos`/`tensorflow-metal`, which have no Linux wheels for CI's
+  `ubuntu-latest` runner. Fixed in a same-day `fix:` commit (`7918a97`) adding a portable `ci` extra
+  (plain `tensorflow==2.16.2` + `albumentations==2.0.8`, both of which do publish Linux wheels) and
+  pointing the workflow at `pip install -e ".[dev,ci]"`; verified in a scratch venv outside the
+  `safestreets` conda env before pushing, and confirmed green on GitHub Actions run `37763477431`.
+  Any future phase that adds a new runtime import needs to check it installs in CI, not just in the
+  local `safestreets` env: the two environments diverged exactly this way once already.
 
 ### Template
 
