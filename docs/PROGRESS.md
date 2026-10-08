@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-10-08 · by: phase-3 session · commit: TBD (see squash record)
+Last updated: 2026-10-08 · by: phase-3 session · commit: `d9057ad`
 
 ---
 
@@ -228,7 +228,7 @@ Surprises / notes for the next session:
   it in a later phase if disk pressure returns.
 
 ### Phase 3 — Augmentation + `tf.data` pipeline
-Completed: 2026-10-08 · commit: TBD (see squash record)
+Completed: 2026-10-08 · commit: `d9057ad`
 Exit gate: `make verify PHASE=3`
 Exit code: 0
 
