@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-09-13 · by: phase-2 session · commit: `1232c08`
+Last updated: 2026-10-08 · by: phase-3 session · commit: TBD (see squash record)
 
 ---
 
@@ -17,7 +17,7 @@ Last updated: 2026-09-13 · by: phase-2 session · commit: `1232c08`
 | 0 | Foundation: env, packaging, config, CI | `DONE` | ✓ | env pinned per ADR-001, PR pending |
 | 1 | Datasets, manifests, leakage-safe splits | `DONE` | ✓ | merged; XD-Violence SKIPPED (38.3 GB, over budget), see docs/DATASETS.md |
 | 2 | Preprocessing → clip cache | `DONE` | ✓ | merged; RLVS drops 4 unreadable clips |
-| 3 | Augmentation + `tf.data` pipeline | `NOT_STARTED` | ✗ | — |
+| 3 | Augmentation + `tf.data` pipeline | `DONE` | ✓ | merged; additional_targets used instead of ReplayCompose for throughput |
 | 4 | Model + training + MLflow + TensorBoard | `NOT_STARTED` | ✗ | — |
 | 5 | Evaluation harness | `NOT_STARTED` | ✗ | — |
 | 6 | Optuna HPO | `NOT_STARTED` | ✗ | — |
@@ -226,6 +226,66 @@ Surprises / notes for the next session:
   build, comfortably above the 15 GB DoD floor) so raw video is still on disk for all four
   datasets. It re-reads and verifies each committed clip before deleting its source file; exercise
   it in a later phase if disk pressure returns.
+
+### Phase 3 — Augmentation + `tf.data` pipeline
+Completed: 2026-10-08 · commit: TBD (see squash record)
+Exit gate: `make verify PHASE=3`
+Exit code: 0
+
+```
+ruff check . && pytest -m phase3 -q
+All checks passed!
+..............                                                           [100%]
+14 passed, 36 deselected in 9.19s
+```
+
+Full guard including Phase 0/1/2 (`pytest -m "phase0 or phase1 or phase2 or phase3" -q`):
+```
+..................................................                       [100%]
+50 passed in 217.49s (0:03:37)
+```
+
+Throughput on the real cache (`make_dataset("train", ...)`, 300 batches of 8, 112x112x16 clips):
+```
+clips=2400 elapsed_s=9.51 throughput_clips_per_s=252.3
+```
+Re-measured twice more across other runs this session: 357.4 and 351.8 clips/s; 252.3 was the
+slowest observed and is the number recorded here, all comfortably above the 200 clips/s floor.
+
+Before/after figure: `artifacts/figures/augmented_clips.png` rendered and visually confirmed,
+flips/crops consistent within each clip's row, no frame-to-frame flicker (not committed, see
+`.gitignore`, same as Phase 2's contact sheet).
+
+DoD checklist: 9/9 met
+Deviations from plan: BUILD_PLAN offers two ways to apply one shared parameter draw per clip,
+`A.ReplayCompose` (apply to frame 0, replay on the rest) or Albumentations'
+`additional_targets` (pass every frame as one call). Implemented with `ReplayCompose` first per
+the BUILD_PLAN's "Mandatory" wording; measured 48-50 clips/s on the real cache, well under the
+200 clips/s floor. Profiling (`cProfile`) showed `ReplayCompose.replay()` rebuilds its entire
+transform tree via `inspect.signature` introspection on every single replay call, about 15x per
+clip. Switched to the `additional_targets` form the plan explicitly names as the alternative:
+same "one parameter draw per clip" guarantee (verified by the clip-consistency test), ~10x the
+throughput (measured ~85 clips/s single-call micro-benchmark under ReplayCompose vs ~800 clips/s
+under `additional_targets`), landing at 252-357 clips/s end to end through tf.data. Not a new
+ADR since BUILD_PLAN names both forms as acceptable; recorded here as the reason one was picked
+over the other.
+Also: `cv2.setNumThreads(1)` is set at import time in `dataset.py`. Albumentations' OpenCV
+backend defaults to an 8-thread pool per call; left alone, tf.data's own AUTOTUNE parallel map
+calls each spawned their own 8-thread cv2 pool and oversubscribed the machine against itself,
+measured at 34-50 clips/s with threading versus 85+ clips/s single-threaded. Threaded Python-level
+augmentation (`ThreadPoolExecutor`) was also benchmarked and made things worse, not better (GIL
+contention on the Python-heavy parts of the Albumentations call path), which is why this pipeline
+relies on tf.data's `AUTOTUNE` map concurrency with `cv2.setNumThreads(1)` rather than any
+additional multiprocessing layer.
+Surprises / notes for the next session:
+- The stale-cache guard compares `(n_frames, height, width)` from the cache file's HDF5 attrs
+  against `configs/data.yaml`'s `pipeline:` block, not the full `config_sha`; a cache rebuilt with
+  the same shape but a different `sampling` strategy would not be caught by `dataset.py`, only by
+  `scripts/build_cache.py`'s own idempotency check. If Phase 2's preprocessing spec changes again
+  in a way that keeps the shape fixed, this guard will not notice.
+- `GaussNoise(noise_scale_factor=0.25)` generates noise at a coarser resolution and upsamples it;
+  chosen for throughput, visually indistinguishable at 112x112 in the rendered figure, but not
+  independently verified against the report's §4.2 intent beyond "still visibly noisy."
 
 ### Template
 

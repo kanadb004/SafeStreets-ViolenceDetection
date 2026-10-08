@@ -3,3 +3,26 @@ manifests_dir: data/manifests
 cache_dir: data/cache
 raw_dir: data/raw
 seed: 1265
+
+# Must match the Phase 2 cache's (n_frames, height, width) exactly; dataset.py
+# raises StaleCacheError on a mismatch rather than training on a stale cache.
+pipeline:
+  n_frames: 16
+  height: 112
+  width: 112
+  # "unit_range" -> [0,1]; "symmetric" -> [-1,1] for MobileNetV2-style backbones.
+  normalize: unit_range
+  shuffle_buffer: 512
+  batch_size: 8
+
+# Report §4.2 augmentation set. Applied via ReplayCompose: one parameter draw
+# per clip, replayed across all frames. Eval uses resize-only, no randomness.
+augment:
+  horizontal_flip_p: 0.5
+  brightness_contrast_p: 0.5
+  brightness_contrast_limit: 0.2
+  random_resized_crop_p: 0.5
+  random_resized_crop_scale_min: 0.8
+  random_resized_crop_scale_max: 1.0
+  gauss_noise_p: 0.3
+  gauss_noise_std_max: 0.08
