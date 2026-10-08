@@ -38,4 +38,7 @@ def load_config(config_path: Path | str | None = None) -> DataConfig:
         if env_var in os.environ:
             raw[field] = os.environ[env_var]
 
-    return DataConfig(**raw)
+    # data.yaml also carries the Phase 3 `pipeline:`/`augment:` blocks, loaded
+    # separately by safestreets.data.dataset/augment; DataConfig only owns paths/seed.
+    known = {f: raw[f] for f in ("data_root", "manifests_dir", "cache_dir", "raw_dir", "seed")}
+    return DataConfig(**known)
