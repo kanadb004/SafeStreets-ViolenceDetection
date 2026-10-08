@@ -101,12 +101,28 @@ XD-Violence in full, you have taken a wrong turn.
 ### 3.2 Compute: Apple M2, 16 GB unified memory, no CUDA
 
 - Baseline training (Phase 4) is expected to be **hours, not minutes**, locally. That is fine.
-- Full Optuna studies (Phase 6) remain the phase most likely to want Google Colab, for throughput
-  rather than necessity. Every training entry point therefore **must** run unmodified from a Colab
+- **Phase 6 should run on Colab.** At 10 min/epoch, a 25 trial study capped at 15 epochs on a 50%
+  subsample is roughly 20 h locally even with pruning, plus a 5 to 8 h retrain of the winner. On a
+  T4 or L4 that is a few hours. Phase 4 is a reasonable candidate too. This is why every entry point
+  must stay path agnostic and config driven. Every training entry point therefore **must** run unmodified from a Colab
   notebook: no absolute paths, all paths from config, `--data-root` overridable by env var.
-- **Metal is confirmed working** (measured 2026-09-13 in `tf_env`): 2080 GFLOP/s on GPU vs 341 on
-  CPU, a 6.1x speedup, on a 2048³ matmul. Real conv/LSTM throughput will be lower, but local
-  training is viable. Phase 0 re-measures on the real model and records it in ADR-001.
+- **Metal works but helps far less than raw FLOPs suggest.** Measured on the actual Phase 4 `scratch`
+  architecture (0.37M params, T=16, 112x112, batch 8) in `tf_env`, 2026-10-08:
+
+  | | ms/step | min/epoch (2800 clips) |
+  |---|---|---|
+  | `/GPU:0` best observed, quiet | 1393 | 8.1 |
+  | `/GPU:0` median under load avg 23.7 | 5499 | 32.1 |
+  | `/CPU:0` median, same load | 8676 | 50.6 |
+
+  GPU beats CPU by only **1.58x** here, against 6.1x on a pure 2048x2048 matmul. TF-Metal does not
+  pipeline `TimeDistributed` plus LSTM well. **Plan on 10 to 15 min/epoch on a quiet machine**, so a
+  30 epoch run is 5 to 8 h.
+- **Batch size 8, not more.** Measured per clip cost: bs=8 is 174 ms/clip, bs=16 is 276 ms/clip
+  (worse), bs=32 did not finish a step in 10 minutes. 16 GB unified memory is the ceiling. Phase 6
+  should not search above 16.
+- **Close other applications before training.** The 4x spread above is background load, not noise.
+  Phase 0 re-measures on an idle machine and records the real figure in ADR-001.
 
 ---
 

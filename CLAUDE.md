@@ -197,15 +197,20 @@ Then pip installs only what is missing: `pandas pyarrow pyyaml flask pytest ruff
 albumentations optuna mlflow onnx onnxruntime tf2onnx ultralytics`. Leave `tf_env` itself untouched,
 other projects use it.
 
-Metal is confirmed working, measured 2026-09-13:
+Metal works, but helps less than raw FLOPs suggest. Measured on the real Phase 4 `scratch` model
+(0.37M params, T=16, 112x112, batch 8), 2026-10-08:
 
 ```
-/GPU:0   2080 GFLOP/s     10x 2048^3 matmul
-/CPU:0    341 GFLOP/s     6.1x slower
+/GPU:0  1393 ms/step  best observed on a quiet machine    8.1 min/epoch
+/GPU:0  5499 ms/step  median under load average 23.7     32.1 min/epoch
+/CPU:0  8676 ms/step  same load, GPU only 1.58x faster   50.6 min/epoch
+2048^3 matmul for contrast: GPU 2080 vs CPU 341 GFLOP/s, 6.1x
 ```
 
-So local training is viable. Heavy phases (4, 6) may still want Colab for throughput, so keep every
-entry point path agnostic and config driven.
+Plan on 10 to 15 min/epoch quiet, so a 30 epoch run is 5 to 8 h. Use **batch size 8**: bs=16 costs
+276 ms/clip against 174 at bs=8, and bs=32 never completed a step. **Close other apps before
+training,** the 4x spread above is background load. **Run Phase 6 on Colab,** a full study is around
+20 h locally. Keep every entry point path agnostic and config driven.
 
 **Known seam:** TF 2.16.2 ships Keras 3.10, and `tf2onnx` does not support Keras 3. ADR-001 in
 Phase 0 resolves this, most likely by installing `tf-keras` and setting `TF_USE_LEGACY_KERAS=1`.
