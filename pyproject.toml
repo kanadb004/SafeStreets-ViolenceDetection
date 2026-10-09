@@ -63,6 +63,12 @@ markers = [
     "phase9: Phase 9 - ONNX export + streaming inference",
     "phase10: Phase 10 - Flask application rebuild",
     "phase11: Phase 11 - packaging, reproducibility, reporting",
+    "sprint1: Sprint 1 - see docs/SPRINT_PLAN.md",
+    "sprint2: Sprint 2 - see docs/SPRINT_PLAN.md",
+    "sprint3: Sprint 3 - see docs/SPRINT_PLAN.md",
+    "sprint4: Sprint 4 - see docs/SPRINT_PLAN.md",
+    "sprint5: Sprint 5 - see docs/SPRINT_PLAN.md",
+    "sprint6: Sprint 6 - see docs/SPRINT_PLAN.md",
     "slow: slow-running tests, skipped in normal CI",
     "needs_data: requires downloaded datasets, skipped in normal CI",
 ]

@@ -6,13 +6,24 @@ The target system is specified by `DA1_Report_23BCE1265.pdf`; the build is plann
 
 ## Start every session here
 
-1. Read `docs/PROGRESS.md`. The first phase not marked `DONE` is your phase.
-2. Read **only** that phase's section in `docs/BUILD_PLAN.md`, plus every ADR in `docs/decisions/`.
-3. Check the phase's Preconditions. If one fails, fix the earlier phase — do not work around it.
-4. Build only that phase's declared deliverables.
-5. Run the phase's Exit Gate (`make verify PHASE=N`). It must exit 0.
-6. Update `docs/PROGRESS.md` — status, evidence block with real pasted output, notes.
-7. Commit: `phase(N): <summary>`.
+**The active plan is `docs/SPRINT_PLAN.md`,** which supersedes Phases 4 to 11 of
+`docs/BUILD_PLAN.md`. Phases 0 to 3 are `DONE`. There is a 1 to 1.5 day deadline from 2026-10-10 and
+the deliverable is six executed notebooks backed by the `safestreets/` package.
+
+1. Read `docs/PROGRESS.md`. Use the **Sprint board**. The first sprint not marked `DONE` is yours.
+2. Read **only** that sprint's section in `docs/SPRINT_PLAN.md`, plus every ADR in `docs/decisions/`.
+   Read `SPRINT_PLAN.md` §1 and §2 once, so you know what was cut and why.
+3. Check Preconditions. If one fails, fix it rather than working around it.
+4. Build only that sprint's declared deliverables.
+5. Run the Exit Gate (`make verify SPRINT=N`). It must exit 0.
+6. Run `jupyter nbconvert --execute --inplace` on any notebook that exists, every sprint, not just
+   Sprint 6. Late notebook breakage is the main schedule risk.
+7. Update `docs/PROGRESS.md`: sprint status, evidence block with real pasted output, notes.
+8. Commit: `sprint(N): <summary>`.
+
+**Under deadline pressure:** if you are behind, drop the issue and PR ceremony and commit straight to
+`main` with the same message rules, and record that you did. Never cut the notebooks, and never
+invent a number to avoid a gap.
 
 ## Non-negotiables
 
@@ -26,7 +37,9 @@ The target system is specified by `DA1_Report_23BCE1265.pdf`; the build is plann
 - **Don't exceed the disk budget.** ~44 GB free. Never fetch raw UCF-Crime or XD-Violence in full;
   see BUILD_PLAN §3.1.
 - Config lives in `configs/*.yaml`, not in Python literals. Every script takes `--seed` (default 1265).
-- A phase may not break an earlier phase's gate: `pytest -m "phase0 or ... or phaseN"` must pass.
+- A sprint may not break an earlier gate: `pytest -m "phase0 or ... or sprintN"` must pass.
+- **Scope that was cut is written up as cut.** `SPRINT_PLAN.md` §2 lists every cut and where to
+  disclose it. Never describe cut scope as delivered.
 - Commit and push per the **Git conventions** section below. No exceptions, no AI attribution.
 
 ## Git conventions

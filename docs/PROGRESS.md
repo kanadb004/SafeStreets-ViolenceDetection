@@ -18,14 +18,28 @@ Last updated: 2026-10-08 · by: phase-3 session · commit: `d9057ad`
 | 1 | Datasets, manifests, leakage-safe splits | `DONE` | ✓ | merged; XD-Violence SKIPPED (38.3 GB, over budget), see docs/DATASETS.md |
 | 2 | Preprocessing → clip cache | `DONE` | ✓ | merged; RLVS drops 4 unreadable clips |
 | 3 | Augmentation + `tf.data` pipeline | `DONE` | ✓ | merged; additional_targets used instead of ReplayCompose for throughput |
-| 4 | Model + training + MLflow + TensorBoard | `NOT_STARTED` | ✗ | — |
-| 5 | Evaluation harness | `NOT_STARTED` | ✗ | — |
-| 6 | Optuna HPO | `NOT_STARTED` | ✗ | — |
-| 7 | AIRTLab women-specific fine-tuning | `NOT_STARTED` | ✗ | — |
-| 8 | Person + gender attribution | `NOT_STARTED` | ✗ | — |
-| 9 | ONNX export + streaming inference | `NOT_STARTED` | ✗ | — |
-| 10 | Flask application rebuild | `NOT_STARTED` | ✗ | — |
-| 11 | Packaging, reproducibility, reporting | `NOT_STARTED` | ✗ | — |
+| 4 | Model + training + MLflow + TensorBoard | `SUPERSEDED` | n/a | replaced by Sprint 1, see docs/SPRINT_PLAN.md |
+| 5 | Evaluation harness | `SUPERSEDED` | n/a | replaced by Sprint 2 |
+| 6 | Optuna HPO | `SUPERSEDED` | n/a | replaced by Sprint 3 |
+| 7 | AIRTLab fine-tuning | `SUPERSEDED` | n/a | replaced by Sprint 4 |
+| 8 | Person + gender attribution | `SUPERSEDED` | n/a | replaced by Sprint 4 |
+| 9 | ONNX + streaming inference | `SUPERSEDED` | n/a | replaced by Sprint 5 |
+| 10 | Flask application rebuild | `SUPERSEDED` | n/a | replaced by Sprint 5 |
+| 11 | Packaging, reproducibility, reporting | `SUPERSEDED` | n/a | replaced by Sprint 6 |
+
+### Sprint board (active) — deadline 1 to 1.5 days from 2026-10-10
+
+Phases 0 to 3 are done. Everything remaining runs through `docs/SPRINT_PLAN.md`, which supersedes
+Phases 4 to 11. **This is the board to read.**
+
+| # | Sprint | Status | Exit gate run? | Notes |
+|---|--------|--------|----------------|-------|
+| 1 | Feature store, models, training | `NOT_STARTED` | x | frozen MobileNetV2 features + LSTM head |
+| 2 | Evaluation harness | `NOT_STARTED` | x | no frame-level AUC, see SPRINT_PLAN §2 |
+| 3 | Optuna HPO | `NOT_STARTED` | x | 30 trials, ~25 min measured |
+| 4 | AIRTLab fine-tune + attribution | `NOT_STARTED` | x | zero-shot CLIP gender, no PA-100K training |
+| 5 | ONNX, real-time, Flask app | `NOT_STARTED` | x | closes the 5 legacy defects |
+| 6 | Notebooks, results, model card | `NOT_STARTED` | x | **the submission** |
 
 ---
 
