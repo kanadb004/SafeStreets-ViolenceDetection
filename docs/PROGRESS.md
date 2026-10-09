@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-10-10 · by: sprint-3 session · commit: `pending`
+Last updated: 2026-10-10 · by: sprint-3 session · commit: `cd0451e`
 
 ---
 
@@ -511,7 +511,7 @@ Surprises / notes for the next session:
   `.keras` file itself).
 
 ### Sprint 3 — Optuna HPO
-Completed: 2026-10-10 · commit: `pending` · supersedes Phase 6
+Completed: 2026-10-10 · commit: `cd0451e` · supersedes Phase 6
 Exit gate: `make verify SPRINT=3`
 Exit code: 0
 
