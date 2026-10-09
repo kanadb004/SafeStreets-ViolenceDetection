@@ -30,8 +30,16 @@ dev = [
 # `tensorflow-metal` have no Linux wheels, so CI cannot install `ml` as pinned;
 # plain `tensorflow` has a Linux wheel for the same 2.16.2 release and CI never
 # needs Metal or the ONNX export chain. See docs/decisions/ADR-001-runtime-stack.md.
+# `tf-keras` and `mlflow` are here too: Sprint 1's `safestreets.training`/
+# `safestreets.features` modules import both at module level (ADR-001's
+# TF_USE_LEGACY_KERAS seam, and MLflow run logging), so any test that imports
+# them needs both present, not just TensorFlow itself. This gap went unnoticed
+# locally because the `safestreets` conda env already has them pip-installed
+# outside of pyproject.toml; it only surfaces on a from-scratch install like CI's.
 ci = [
     "tensorflow==2.16.2",
+    "tf-keras==2.16.*",
+    "mlflow",
     "albumentations==2.0.8",
 ]
 # See docs/decisions/ADR-001-runtime-stack.md for why these exact versions.
@@ -44,6 +52,7 @@ ml = [
     "onnxruntime==1.18.1",
     "tf2onnx==1.17.0",
     "albumentations==2.0.8",
+    "mlflow",
 ]
 
 [tool.setuptools.packages.find]
