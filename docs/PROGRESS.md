@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-10-10 · by: sprint-2 session · commit: `pending`
+Last updated: 2026-10-10 · by: sprint-2 session · commit: `1ac1862`
 
 ---
 
@@ -428,7 +428,7 @@ Surprises / notes for the next session:
   any future scratch-arch run on this machine, not the optimistic one.
 
 ### Sprint 2 — Evaluation harness
-Completed: 2026-10-10 · commit: `pending` · supersedes Phase 5
+Completed: 2026-10-10 · commit: `1ac1862` · supersedes Phase 5
 Exit gate: `make verify SPRINT=2`
 Exit code: 0
 
