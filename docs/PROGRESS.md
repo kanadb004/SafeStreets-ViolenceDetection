@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-10-10 · by: sprint-4 session · commit: pending
+Last updated: 2026-10-10 · by: sprint-4 session · commit: `25bf12d`
 
 ---
 
@@ -594,7 +594,7 @@ Surprises / notes for the next session:
   `ExperimentalWarning` by Optuna 5.0.0 (API available since 2.2.0); harmless, not pinned around.
 
 ### Sprint 4 — AIRTLab fine-tune and attribution
-Completed: 2026-10-10 · commit: pending · supersedes Phases 7/8
+Completed: 2026-10-10 · commit: `25bf12d` · supersedes Phases 7/8
 Exit gate: `make verify SPRINT=4`
 Exit code: 0
 
