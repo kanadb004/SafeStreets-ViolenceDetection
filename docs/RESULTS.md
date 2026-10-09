@@ -49,6 +49,17 @@ Model trained on rwf2000 + rlvs only. RLVS test is in-domain (held out of traini
 | airtlab | no (zero-shot) | 48 | 0.5259 | [0.3556, 0.7000] | +0.4546 |
 | ucfcrime | no (zero-shot) | 5 | 1.0000 | [1.0000, 1.0000] | -0.0195 |
 
+## HPO-tuned model vs. baseline
+
+Both rows scored on the same combined test split, at the baseline's F1-optimal threshold. See `docs/decisions/ADR-004-hpo.md` for the search and `artifacts/figures/optuna_{history,importances}.png` for the study.
+
+| Model | ROC-AUC | 95% CI | Accuracy | F1 |
+|---|---|---|---|---|
+| Baseline (lstm_head) | 0.9450 | [0.9204, 0.9663] | 0.8769 | 0.8930 |
+| Tuned (lstm_head_tuned) | 0.9418 | [0.9150, 0.9653] | 0.8708 | 0.8883 |
+
+tuning did not beat the baseline; the baseline ships, reported here as-is.
+
 ## Limitations
 
 - **Frame-level AUC on untrimmed video is out of scope.** XD-Violence was never fetched (38.3 GB, over the disk budget, ADR-002) and the UCF-Crime subset holds only 35 clips total, too few for a meaningful frame-level AUC. See docs/SPRINT_PLAN.md §2.

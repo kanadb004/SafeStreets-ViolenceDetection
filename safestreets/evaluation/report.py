@@ -71,12 +71,50 @@ def _cross_dataset_table(cross_dataset: dict) -> str:
     return "\n".join(lines)
 
 
+def _tuning_section(eval_test: dict, eval_test_tuned: dict | None) -> list[str]:
+    """Sprint 3: the tuned winner beside the baseline, both at the baseline's
+    F1-optimal threshold so the rows are directly comparable. Present only
+    when `artifacts/reports/eval_test_tuned.json` exists (Sprint 3 has run).
+    """
+    if eval_test_tuned is None:
+        return []
+    lines = [
+        "## HPO-tuned model vs. baseline",
+        "",
+        "Both rows scored on the same combined test split, at the baseline's F1-optimal"
+        " threshold. See `docs/decisions/ADR-004-hpo.md` for the search and"
+        " `artifacts/figures/optuna_{history,importances}.png` for the study.",
+        "",
+        "| Model | ROC-AUC | 95% CI | Accuracy | F1 |",
+        "|---|---|---|---|---|",
+    ]
+    rows = (("Baseline (lstm_head)", eval_test), ("Tuned (lstm_head_tuned)", eval_test_tuned))
+    for label, report in rows:
+        lo, hi = report["roc_auc"]["ci95"]
+        lines.append(
+            f"| {label} | {_fmt(report['roc_auc']['value'])} | [{_fmt(lo)}, {_fmt(hi)}] "
+            f"| {_fmt(report['accuracy']['value'])} | {_fmt(report['f1']['value'])} |"
+        )
+    baseline_auc = eval_test["roc_auc"]["value"]
+    tuned_auc = eval_test_tuned["roc_auc"]["value"]
+    verdict = (
+        "the tuned model beats the baseline and ships."
+        if tuned_auc > baseline_auc
+        else "tuning did not beat the baseline; the baseline ships, reported here as-is."
+    )
+    lines.append("")
+    lines.append(f"{verdict}")
+    lines.append("")
+    return lines
+
+
 def render_results_md(
     eval_val: dict,
     eval_test: dict,
     cross_dataset: dict,
     infer_cfg: dict,
     train_datasets: list[str],
+    eval_test_tuned: dict | None = None,
 ) -> str:
     sel = eval_val["selection"]
     f1_t = sel["f1_optimal"]["threshold"]
@@ -138,6 +176,7 @@ def render_results_md(
         "",
         _cross_dataset_table(cross_dataset),
         "",
+        *_tuning_section(eval_test, eval_test_tuned),
         "## Limitations",
         "",
         "- **Frame-level AUC on untrimmed video is out of scope.** XD-Violence was never"
@@ -169,12 +208,16 @@ def generate(
     with open(infer_yaml_path) as f:
         infer_cfg = yaml.safe_load(f)
 
+    tuned_path = reports_dir / "eval_test_tuned.json"
+    eval_test_tuned = _load_json(tuned_path) if tuned_path.exists() else None
+
     text = render_results_md(
         eval_val,
         eval_test,
         cross_dataset,
         infer_cfg,
         train_datasets or ["rwf2000", "rlvs"],
+        eval_test_tuned=eval_test_tuned,
     )
     Path(out_path).parent.mkdir(parents=True, exist_ok=True)
     Path(out_path).write_text(text)

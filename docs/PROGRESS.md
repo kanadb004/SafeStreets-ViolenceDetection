@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-10-10 · by: sprint-2 session · commit: `1ac1862`
+Last updated: 2026-10-10 · by: sprint-3 session · commit: `pending`
 
 ---
 
@@ -36,7 +36,7 @@ Phases 4 to 11. **This is the board to read.**
 |---|--------|--------|----------------|-------|
 | 1 | Feature store, models, training | `DONE` | ✓ | val_auc 0.8679 (lstm_head) vs 0.6041 (scratch, 12ep) |
 | 2 | Evaluation harness | `DONE` | ✓ | test AUC 0.9450 combined; AIRTLab zero-shot AUC 0.5259 (big drop, real); no frame-level AUC, see SPRINT_PLAN §2 |
-| 3 | Optuna HPO | `NOT_STARTED` | x | 30 trials, ~25 min measured |
+| 3 | Optuna HPO | `DONE` | ✓ | 30 trials (23 complete, 7 pruned), ~32 min measured; tuned val_auc 0.8857 but test AUC 0.9418 < baseline 0.9450, baseline ships (no cherry-picking), see ADR-004 |
 | 4 | AIRTLab fine-tune + attribution | `NOT_STARTED` | x | zero-shot CLIP gender, no PA-100K training |
 | 5 | ONNX, real-time, Flask app | `NOT_STARTED` | x | closes the 5 legacy defects |
 | 6 | Notebooks, results, model card | `NOT_STARTED` | x | **the submission** |
@@ -50,7 +50,7 @@ Fill these in **only** from a committed `artifacts/reports/eval_*.json`. `NOT RU
 | Metric | Value | Source file | Phase |
 |---|---|---|---|
 | Baseline test ROC-AUC (RWF+RLVS held-out) | `0.9450` (combined RLVS+AIRTLab+UCF test) | `artifacts/reports/eval_test.json` | 4/5 |
-| Tuned test ROC-AUC | `NOT RUN` | — | 6 |
+| Tuned test ROC-AUC | `0.9418` (did not beat baseline; baseline 0.9450 ships) | `artifacts/reports/eval_test_tuned.json` | 6 |
 | Cross-dataset AUC (→ AIRTLab, zero-shot) | `0.5259` | `artifacts/reports/cross_dataset.json` | 5 |
 | Cross-dataset AUC (→ UCF-Crime subset) | `1.0000` (n=5, zero-shot) | `artifacts/reports/cross_dataset.json` | 5 |
 | Frame-level AUC (untrimmed) | `NOT RUN` (out of scope, see SPRINT_PLAN §2) | — | 5 |
@@ -509,6 +509,89 @@ Surprises / notes for the next session:
   the loss. If a future sprint calls `.evaluate()` on a loaded checkpoint instead, it will need the
   loss reconstructed with the checkpoint's own `pos_weight` (logged in MLflow params, not in the
   `.keras` file itself).
+
+### Sprint 3 — Optuna HPO
+Completed: 2026-10-10 · commit: `pending` · supersedes Phase 6
+Exit gate: `make verify SPRINT=3`
+Exit code: 0
+
+```
+ruff check .
+All checks passed!
+pytest -m "phase0 or phase1 or phase2 or phase3 or sprint1  or sprint2  or sprint3" -q
+........................................................................   [ 94%]
+....                                                                      [100%]
+76 passed in 262.20s (0:04:22)
+```
+
+Study (`python scripts/tune.py --trials 30 --timeout 2400`), `artifacts/optuna/study.db`,
+`TPESampler(seed=1265)`, `MedianPruner(n_startup_trials=5, n_warmup_steps=5)`, wall clock
+02:52:40 to 03:24:30 (about 32 minutes) for all 30 trials at 25 epochs each:
+```
+study has 30 trials (23 complete, 7 pruned); best_val_auc=0.8857
+best params: learning_rate=0.004862, lstm_units=128, dropout=0.4921, batch_size=16 (trial 21)
+```
+At least one `PRUNED` trial: 7 of 30. `configs/model.best.yaml` written programmatically from the
+winning trial; `tests/test_sprint3_tune.py::test_write_best_model_yaml_reproduces_architecture`
+loads it through `build_model` and asserts the resulting LSTM layer has `units=256` for a
+synthetic winner, proving the round-trip rather than eyeballing the YAML. Both figures rendered:
+`artifacts/figures/optuna_history.png`, `artifacts/figures/optuna_importances.png`. Hyperparameter
+importances (`optuna.importance.get_param_importances`): `learning_rate` 0.683, `batch_size`
+0.159, `dropout` 0.112, `lstm_units` 0.045, interpreted in `docs/decisions/ADR-004-hpo.md`.
+
+Resume (`tests/test_sprint3_tune.py::test_run_study_resumes_trial_count`): a study resolved with
+`resume=False` and run to 1 trial, then resolved again with `resume=True` against the same SQLite
+storage and run to 2 trials, ends with exactly 2 trials, not 3; a second test
+(`test_run_study_without_resume_rejects_existing_study`) asserts re-resolving the same study name
+without `resume=True` raises instead of silently restarting.
+
+Winner retrained on train+val (`artifacts/checkpoints/lstm_head_tuned.keras`, 7 epochs,
+batch_size=16, no held-out split remains so no early stopping, per ADR-004):
+```
+Epoch 7/7
+230/230 - 4s - loss: 0.3378 - accuracy: 0.8414 - auc: 0.9256 - precision: 0.8228 - recall: 0.8746
+```
+Scored on the combined test split once, at the baseline's F1-optimal threshold (0.2000, reused
+rather than re-selected, per ADR-004):
+```
+tuned does NOT beat baseline: 0.9418 <= 0.9450; baseline ships, reporting both numbers as-is
+```
+**Tuning did not beat the baseline.** Per SPRINT_PLAN's "no cherry-picking" DoD item, the baseline
+(`artifacts/checkpoints/lstm_head_baseline.keras`) stays the production model; both numbers are
+reported in `docs/RESULTS.md`'s new "HPO-tuned model vs. baseline" section, generated by the same
+`safestreets.evaluation.report.generate()` used in Sprint 2, now also loading
+`eval_test_tuned.json` when present.
+
+DoD checklist: 9/9 met (search space and object as specified; >=1 pruned trial; resume verified;
+`model.best.yaml` round-trips; both figures render and importances are interpreted; winner
+retrained on train+val and test touched once; tuning result reported honestly, baseline ships;
+`docs/RESULTS.md` regenerated with both rows; cumulative gate green).
+Deviations from plan: none in the search itself. The tuned model's evaluation reuses the
+baseline's val-selected F1-optimal threshold rather than selecting a fresh one, because the final
+retrain combines train+val and leaves no held-out split to select a new threshold from without
+touching test twice; recorded as a deliberate choice in ADR-004, option 2 of 3 considered.
+Surprises / notes for the next session:
+- A single `scripts/tune.py` run aborted mid-way with a TensorFlow-Metal plugin crash
+  (`Mutation::Apply error` in `metal_plugin/src/graph/remapper/remapper.cc`) right after the
+  30-trial study had already completed and persisted to `study.db`, during the post-study retrain
+  step's first fresh Keras graph. Not a logic bug; same class of Metal fragility ADR-001 already
+  flagged. Recovered by re-running the retrain/eval/RESULTS.md steps in a fresh process against
+  the same persisted study, exactly the path `--resume` exists for.
+- The *cumulative* Exit Gate (`pytest -m "phase0 or ... or sprint3"`, one process) hit the same
+  class of crash even after the study itself was fine: a test that built several fresh small
+  Keras/LSTM graphs back-to-back (to exercise resume) pushed the already-substantial graph count
+  built by Sprint 1/2's tests over some threshold in the Metal plugin, aborting the whole pytest
+  process (`Fatal Python error: Aborted`), confirmed reproducible twice by running
+  `pytest -m "sprint1 or sprint2 or sprint3"` standalone. Fixed by splitting `run_study` into
+  `resolve_study`/`run_trials` (storage/resume logic) and `build_objective` (the TF-specific part),
+  and testing resume against the former with a trivial non-TF objective. The real TF integration
+  for tuning is still covered, just by the actual production run above rather than by a test that
+  reconstructs it from scratch in the same process as every other sprint's tests. Any future sprint
+  adding more `model.fit` calls to the test suite should budget for this same fragility; one cheap
+  mitigation that was NOT needed here but is worth knowing about: splitting a graph-heavy test file
+  into its own `pytest` invocation sidesteps the cumulative graph count entirely.
+- `optuna.visualization.matplotlib.plot_optimization_history`/`plot_param_importances` are marked
+  `ExperimentalWarning` by Optuna 5.0.0 (API available since 2.2.0); harmless, not pinned around.
 
 ### Template
 

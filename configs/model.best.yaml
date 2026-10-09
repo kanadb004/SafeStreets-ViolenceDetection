@@ -1,0 +1,23 @@
+arch: lstm_head
+lstm_head:
+  input_dim: 1280
+  n_frames: 16
+  units: 128
+  dropout: 0.4920988433143741
+  learning_rate: 0.004862170040863293
+scratch:
+  n_frames: 16
+  height: 112
+  width: 112
+  conv_filters:
+  - 32
+  - 64
+  - 128
+  bottleneck_units: 256
+  lstm_units: 64
+  dropout: 0.4
+  learning_rate: 0.001
+tuned_batch_size: 16
+tuned_best_epoch: 7
+tuned_best_val_auc: 0.8857206106185913
+tuned_trial_number: 21
