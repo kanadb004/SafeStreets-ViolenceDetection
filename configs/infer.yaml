@@ -1,0 +1,5 @@
+git_sha: db46a19af50019e28caf24ec5c1ab906cd3a2a4a
+selected_on: val
+threshold: 0.2
+threshold_recall_floor_0_90: 0.06999999999999999
+threshold_strategy: f1_optimal

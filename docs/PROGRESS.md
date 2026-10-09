@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-10-10 · by: sprint-1 session · commit: `08e27d5`
+Last updated: 2026-10-10 · by: sprint-2 session · commit: `pending`
 
 ---
 
@@ -35,7 +35,7 @@ Phases 4 to 11. **This is the board to read.**
 | # | Sprint | Status | Exit gate run? | Notes |
 |---|--------|--------|----------------|-------|
 | 1 | Feature store, models, training | `DONE` | ✓ | val_auc 0.8679 (lstm_head) vs 0.6041 (scratch, 12ep) |
-| 2 | Evaluation harness | `NOT_STARTED` | x | no frame-level AUC, see SPRINT_PLAN §2 |
+| 2 | Evaluation harness | `DONE` | ✓ | test AUC 0.9450 combined; AIRTLab zero-shot AUC 0.5259 (big drop, real); no frame-level AUC, see SPRINT_PLAN §2 |
 | 3 | Optuna HPO | `NOT_STARTED` | x | 30 trials, ~25 min measured |
 | 4 | AIRTLab fine-tune + attribution | `NOT_STARTED` | x | zero-shot CLIP gender, no PA-100K training |
 | 5 | ONNX, real-time, Flask app | `NOT_STARTED` | x | closes the 5 legacy defects |
@@ -49,11 +49,11 @@ Fill these in **only** from a committed `artifacts/reports/eval_*.json`. `NOT RU
 
 | Metric | Value | Source file | Phase |
 |---|---|---|---|
-| Baseline test ROC-AUC (RWF+RLVS held-out) | `NOT RUN` | — | 4/5 |
+| Baseline test ROC-AUC (RWF+RLVS held-out) | `0.9450` (combined RLVS+AIRTLab+UCF test) | `artifacts/reports/eval_test.json` | 4/5 |
 | Tuned test ROC-AUC | `NOT RUN` | — | 6 |
-| Cross-dataset AUC (→ AIRTLab, zero-shot) | `NOT RUN` | — | 5 |
-| Cross-dataset AUC (→ UCF-Crime subset) | `NOT RUN` | — | 5 |
-| Frame-level AUC (untrimmed) | `NOT RUN` | — | 5 |
+| Cross-dataset AUC (→ AIRTLab, zero-shot) | `0.5259` | `artifacts/reports/cross_dataset.json` | 5 |
+| Cross-dataset AUC (→ UCF-Crime subset) | `1.0000` (n=5, zero-shot) | `artifacts/reports/cross_dataset.json` | 5 |
+| Frame-level AUC (untrimmed) | `NOT RUN` (out of scope, see SPRINT_PLAN §2) | — | 5 |
 | AIRTLab fine-tuned accuracy (5-fold) | `NOT RUN` | — | 7 |
 | Gender module accuracy | `NOT RUN` | — | 8 |
 | ONNX p95 latency / sustainable FPS | `NOT RUN` | — | 9 |
@@ -426,6 +426,89 @@ Surprises / notes for the next session:
 - The `scratch` comparison run took ~33 minutes for its 9 completed epochs (204-229s/epoch, close to
   CLAUDE.md's "under load" estimate, not the "quiet machine" one) — plan around the higher number for
   any future scratch-arch run on this machine, not the optimistic one.
+
+### Sprint 2 — Evaluation harness
+Completed: 2026-10-10 · commit: `pending` · supersedes Phase 5
+Exit gate: `make verify SPRINT=2`
+Exit code: 0
+
+```
+ruff check .
+All checks passed!
+pytest -m "phase0 or phase1 or phase2 or phase3 or sprint1 or sprint2" -q
+......................................................................   [100%]
+70 passed in 248.47s (0:04:08)
+```
+
+Threshold selection (`python scripts/evaluate.py`), on RWF-2000 + RLVS **validation** only
+(673 clips), persisted to `configs/infer.yaml`:
+```
+val n=673 f1_optimal_threshold=0.2000
+```
+F1-optimal threshold 0.2000 (F1=0.8037 on val); recall>=0.90 threshold 0.0700 (recall=0.9042,
+precision=0.6888 on val). `tests/test_sprint2_eval.py::test_threshold_was_selected_on_validation_not_test`
+asserts the persisted value traces to `eval_val.json`'s `split: "val"`, not a test file.
+
+Headline test metrics (combined RLVS test + AIRTLab test + UCF-Crime test, 325 clips, RWF-2000
+contributes no test rows under its official split per ADR-002), at the F1-optimal threshold:
+```
+test (combined) n=325 roc_auc=0.9450
+```
+Full metric block (`artifacts/reports/eval_test.json`): ROC-AUC 0.9450 [0.9204, 0.9663], PR-AUC
+0.9471 [0.9201, 0.9704], accuracy 0.8769 [0.8400, 0.9138], precision 0.8392 [0.7905, 0.8923],
+recall 0.9543 [0.9191, 0.9828], F1 0.8930 [0.8595, 0.9260]. Confusion matrix: tn=118, fp=32,
+fn=8, tp=167.
+
+Cross-dataset matrix (`artifacts/reports/cross_dataset.json`), model trained on RWF-2000+RLVS
+only:
+```
+  rlvs       in_domain=True  roc_auc=0.9805
+  airtlab    in_domain=False roc_auc=0.5259
+  ucfcrime   in_domain=False roc_auc=1.0000
+```
+AIRTLab (zero-shot) drops 0.4546 AUC below the RLVS in-domain number, a real generalisation
+gap, not a leak (per the "no drop at all means suspecting leakage" instruction, a drop this
+size is the expected and reassuring outcome). UCF-Crime's AUC is measured at 1.0000 but on only
+5 test clips (1 negative, 4 positive); reported as measured, with its sample size flagged in
+`docs/RESULTS.md`'s limitations section rather than read as a real zero-error result.
+
+Four figures rendered and referenced from `docs/RESULTS.md`: `artifacts/figures/{roc,pr,
+confusion,threshold_sweep}.png` (not committed, gitignored same as Phase 2/3's figures).
+
+`docs/RESULTS.md` regeneration (`tests/test_sprint2_eval.py::test_results_md_regenerates_with_no_diff`):
+running `safestreets.evaluation.report.generate()` twice against the same committed
+`eval_*.json`/`cross_dataset.json`/`infer.yaml` artefacts produces byte-identical output, verified
+directly (not just by convention).
+
+Metrics-vs-sklearn test (`tests/test_sprint2_eval.py::test_metrics_agree_with_sklearn_to_1e9`):
+passes; `safestreets.evaluation.metrics` calls `sklearn.metrics` directly rather than
+reimplementing, so this is agreement by construction, documented as such in the module
+docstring rather than presented as independent verification.
+
+DoD checklist: 9/9 met.
+Deviations from plan: none. The sprint's "in-domain test split is RLVS+AIRTLab+UCF test combined"
+instruction and its "cross-dataset: test zero-shot on AIRTLab and UCF" instruction look like they
+disagree about whether AIRTLab/UCF are in-domain; resolved by reading "in-domain" as "the combined
+task-level headline number" (what ships as the single reported test AUC) and the cross-dataset
+matrix as a separate, finer-grained breakdown of that same model's zero-shot transfer gap. Not a
+new ADR since both bullets are satisfied simultaneously by this reading, not traded off against
+each other.
+Surprises / notes for the next session:
+- AIRTLab's zero-shot AUC (0.5259) is close to chance. Given AIRTLab is acted/staged footage
+  (BUILD_PLAN §7 caveat, carried into `docs/RESULTS.md`'s limitations section), this is plausibly
+  a filming-style domain gap rather than a model failure; Sprint 4's AIRTLab fine-tune and its
+  forgetting check will be the real test of that reading. Flagging now so Sprint 4 doesn't
+  rediscover this number cold.
+- The UCF-Crime test split's n=5 (1 negative, 4 positive) makes its bootstrap CI collapse to a
+  single point in this run ([1.0000, 1.0000]); `safestreets.evaluation.metrics.bootstrap_ci`
+  degrades to `[nan, nan]` when fewer than 2 resamples retain both classes, but with n=5 enough
+  resamples still do. Future sessions reading a suspiciously tight CI on a tiny split should check
+  `n` before trusting it.
+- `tf_keras.models.load_model(..., compile=False)` was enough for evaluation; the custom
+  `weighted_bce` loss closure never needed a `custom_objects` entry since `.predict` doesn't touch
+  the loss. If a future sprint calls `.evaluate()` on a loaded checkpoint instead, it will need the
+  loss reconstructed with the checkpoint's own `pos_weight` (logged in MLflow params, not in the
+  `.keras` file itself).
 
 ### Template
 
