@@ -55,6 +55,8 @@ ml = [
     "albumentations==2.0.8",
     "mlflow",
     "optuna==5.0.0",
+    "ultralytics==8.4.150",
+    "open-clip-torch==3.3.0",
 ]
 
 [tool.setuptools.packages.find]

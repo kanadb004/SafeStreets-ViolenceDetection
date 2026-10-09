@@ -60,6 +60,23 @@ Both rows scored on the same combined test split, at the baseline's F1-optimal t
 
 tuning did not beat the baseline; the baseline ships, reported here as-is.
 
+## AIRTLab fine-tune (Sprint 4)
+
+5-fold grouped cross-validation on AIRTLab (`group_id` from ADR-002, so both camera views of one event always share a fold), fine-tuning from the baseline checkpoint's weights. See `docs/decisions/ADR-005-finetune-and-attribution.md`.
+
+| Metric | Mean | Std |
+|---|---|---|
+| Accuracy | 0.8486 | 0.0439 |
+| F1 | 0.8863 | 0.0338 |
+| ROC-AUC | 0.8976 | 0.0429 |
+
+Catastrophic forgetting check, RWF-2000 val ROC-AUC before vs. after the AIRTLab fine-tune:
+
+- Before: **0.7150**
+- After: **0.6568** (drop: +0.0582)
+
+ADR-005 ships the fine-tuned checkpoint despite this drop: the AIRTLab gain is large (0.53 to 0.90 AUC) and AIRTLab is the women's-safety-relevant dataset, while RWF-2000 val stays well above chance after the drop.
+
 ## Limitations
 
 - **Frame-level AUC on untrimmed video is out of scope.** XD-Violence was never fetched (38.3 GB, over the disk budget, ADR-002) and the UCF-Crime subset holds only 35 clips total, too few for a meaningful frame-level AUC. See docs/SPRINT_PLAN.md §2.

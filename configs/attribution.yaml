@@ -1,0 +1,20 @@
+# Sprint 4 attribution config. See docs/SPRINT_PLAN.md Sprint 4 and
+# docs/decisions/ADR-005-finetune-and-attribution.md.
+
+person:
+  weights: artifacts/weights/yolov8n.pt
+  person_class: 0 # COCO "person"
+  every_n_frames: 4
+  conf: 0.4
+  tracker: bytetrack.yaml
+
+# Zero-shot CLIP, no training (cut, see docs/SPRINT_PLAN.md §2). Accuracy is
+# unmeasured-or-mediocre by construction; see docs/ETHICS.md.
+gender:
+  model_name: ViT-B-32-quickgelu
+  pretrained: openai
+
+# Shared with configs/infer.yaml's f1_optimal threshold so an alert fires at
+# the same operating point whether or not attribution runs on top of it.
+violence_threshold: 0.2
+priority_gender: woman

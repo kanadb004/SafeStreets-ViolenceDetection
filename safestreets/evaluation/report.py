@@ -108,6 +108,42 @@ def _tuning_section(eval_test: dict, eval_test_tuned: dict | None) -> list[str]:
     return lines
 
 
+def _finetune_section(eval_finetuned: dict | None) -> list[str]:
+    """Sprint 4: AIRTLab 5-fold grouped CV plus the RWF-2000 forgetting check.
+    Present only when `artifacts/reports/eval_finetuned.json` exists.
+    """
+    if eval_finetuned is None:
+        return []
+    cv = eval_finetuned["cv_summary"]
+    forgetting = eval_finetuned["forgetting_check"]
+    lines = [
+        "## AIRTLab fine-tune (Sprint 4)",
+        "",
+        "5-fold grouped cross-validation on AIRTLab (`group_id` from ADR-002, so both"
+        " camera views of one event always share a fold), fine-tuning from the baseline"
+        " checkpoint's weights. See `docs/decisions/ADR-005-finetune-and-attribution.md`.",
+        "",
+        "| Metric | Mean | Std |",
+        "|---|---|---|",
+        f"| Accuracy | {_fmt(cv['accuracy']['mean'])} | {_fmt(cv['accuracy']['std'])} |",
+        f"| F1 | {_fmt(cv['f1']['mean'])} | {_fmt(cv['f1']['std'])} |",
+        f"| ROC-AUC | {_fmt(cv['roc_auc']['mean'])} | {_fmt(cv['roc_auc']['std'])} |",
+        "",
+        "Catastrophic forgetting check, RWF-2000 val ROC-AUC before vs. after the"
+        " AIRTLab fine-tune:",
+        "",
+        f"- Before: **{_fmt(forgetting['roc_auc_before'])}**",
+        f"- After: **{_fmt(forgetting['roc_auc_after'])}**"
+        f" (drop: {forgetting['roc_auc_drop']:+.4f})",
+        "",
+        "ADR-005 ships the fine-tuned checkpoint despite this drop: the AIRTLab gain is"
+        " large (0.53 to 0.90 AUC) and AIRTLab is the women's-safety-relevant dataset,"
+        " while RWF-2000 val stays well above chance after the drop.",
+        "",
+    ]
+    return lines
+
+
 def render_results_md(
     eval_val: dict,
     eval_test: dict,
@@ -115,6 +151,7 @@ def render_results_md(
     infer_cfg: dict,
     train_datasets: list[str],
     eval_test_tuned: dict | None = None,
+    eval_finetuned: dict | None = None,
 ) -> str:
     sel = eval_val["selection"]
     f1_t = sel["f1_optimal"]["threshold"]
@@ -177,6 +214,7 @@ def render_results_md(
         _cross_dataset_table(cross_dataset),
         "",
         *_tuning_section(eval_test, eval_test_tuned),
+        *_finetune_section(eval_finetuned),
         "## Limitations",
         "",
         "- **Frame-level AUC on untrimmed video is out of scope.** XD-Violence was never"
@@ -211,6 +249,9 @@ def generate(
     tuned_path = reports_dir / "eval_test_tuned.json"
     eval_test_tuned = _load_json(tuned_path) if tuned_path.exists() else None
 
+    finetuned_path = reports_dir / "eval_finetuned.json"
+    eval_finetuned = _load_json(finetuned_path) if finetuned_path.exists() else None
+
     text = render_results_md(
         eval_val,
         eval_test,
@@ -218,6 +259,7 @@ def generate(
         infer_cfg,
         train_datasets or ["rwf2000", "rlvs"],
         eval_test_tuned=eval_test_tuned,
+        eval_finetuned=eval_finetuned,
     )
     Path(out_path).parent.mkdir(parents=True, exist_ok=True)
     Path(out_path).write_text(text)
