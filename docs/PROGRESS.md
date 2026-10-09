@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-10-10 · by: sprint-1 session · commit: (pending, see git log)
+Last updated: 2026-10-10 · by: sprint-1 session · commit: `08e27d5`
 
 ---
 
@@ -313,7 +313,7 @@ Surprises / notes for the next session:
   local `safestreets` env: the two environments diverged exactly this way once already.
 
 ### Sprint 1 — Feature store, models, training
-Completed: 2026-10-10 · commit: (pending, see git log) · supersedes Phase 4
+Completed: 2026-10-10 · commit: `08e27d5` · supersedes Phase 4
 Exit gate: `make verify SPRINT=1`
 Exit code: 0
 
