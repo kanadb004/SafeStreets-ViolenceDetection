@@ -1,0 +1,25 @@
+# Sprint 1 training config. See docs/SPRINT_PLAN.md Sprint 1.
+seed: 1265
+
+features_dir: data/features
+checkpoints_dir: artifacts/checkpoints
+mlruns_dir: mlruns
+tensorboard_dir: logs/fit
+
+# Which (dataset, split) pairs feed the production lstm_head run. RWF-2000
+# contributes no test rows (ADR-002); its val split stands in as early-stop
+# signal here, final held-out numbers come from Sprint 2's harness.
+train_datasets: [rwf2000, rlvs]
+val_datasets: [rwf2000, rlvs]
+
+batch_size: 32
+epochs: 50
+early_stop_patience: 8
+early_stop_monitor: val_auc
+histogram_freq: 1
+
+# Phase 3's live augmented tf.data pipeline, used only by the scratch
+# comparison arm (Sprint 1 note: features are extracted from clean clips, no
+# offline augmentation of the production head — see ADR-003).
+scratch_epochs: 12
+scratch_batch_size: 8

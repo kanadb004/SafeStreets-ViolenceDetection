@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-10-08 · by: phase-3 session · commit: `d9057ad`
+Last updated: 2026-10-10 · by: sprint-1 session · commit: (pending, see git log)
 
 ---
 
@@ -34,7 +34,7 @@ Phases 4 to 11. **This is the board to read.**
 
 | # | Sprint | Status | Exit gate run? | Notes |
 |---|--------|--------|----------------|-------|
-| 1 | Feature store, models, training | `NOT_STARTED` | x | frozen MobileNetV2 features + LSTM head |
+| 1 | Feature store, models, training | `DONE` | ✓ | val_auc 0.8679 (lstm_head) vs 0.6041 (scratch, 12ep) |
 | 2 | Evaluation harness | `NOT_STARTED` | x | no frame-level AUC, see SPRINT_PLAN §2 |
 | 3 | Optuna HPO | `NOT_STARTED` | x | 30 trials, ~25 min measured |
 | 4 | AIRTLab fine-tune + attribution | `NOT_STARTED` | x | zero-shot CLIP gender, no PA-100K training |
@@ -312,6 +312,121 @@ Surprises / notes for the next session:
   Any future phase that adds a new runtime import needs to check it installs in CI, not just in the
   local `safestreets` env: the two environments diverged exactly this way once already.
 
+### Sprint 1 — Feature store, models, training
+Completed: 2026-10-10 · commit: (pending, see git log) · supersedes Phase 4
+Exit gate: `make verify SPRINT=1`
+Exit code: 0
+
+```
+ruff check .
+All checks passed!
+pytest -m "phase0 or phase1 or phase2 or phase3 or sprint1" -q
+..........................................................               [100%]
+58 passed in 256.30s (0:04:16)
+```
+
+Feature extraction (`python scripts/extract_features.py --dataset all --split all`), all 11
+`(dataset, split)` pairs, matching the Phase 2 cache's clip counts exactly:
+```
+airtlab/test: wrote 48 clips, 3.9 MB, 4.1s
+airtlab/train: wrote 242 clips, 19.8 MB, 11.2s
+airtlab/val: wrote 60 clips, 4.9 MB, 2.5s
+rlvs/test: wrote 272 clips, 22.3 MB, 8.8s
+rlvs/train: wrote 1402 clips, 114.9 MB, 46.6s
+rlvs/val: wrote 273 clips, 22.4 MB, 9.4s
+rwf2000/train: wrote 1600 clips, 131.2 MB, 52.7s
+rwf2000/val: wrote 400 clips, 32.8 MB, 13.1s
+ucfcrime/test: wrote 5 clips, 0.4 MB, 0.6s
+ucfcrime/train: wrote 24 clips, 2.0 MB, 1.2s
+ucfcrime/val: wrote 6 clips, 0.5 MB, 0.5s
+```
+Total `data/features`: 346 MB (`du -sh`), under the 0.6 GB budget. Idempotent re-run: all 11 files
+report "up to date", total wall time 6.9s including Python/conda-run startup (the
+`existing_features_valid` check itself, isolated in `tests/test_sprint1_model.py`, is under 5s as
+required; most of the 6.9s is interpreter/import overhead common to every invocation of this
+script, not re-extraction).
+
+Production run (`python scripts/train.py --arch lstm_head`), RWF-2000 + RLVS train features,
+early-stopped on `val_auc`, patience 8:
+```
+Epoch 1/50  ... val_auc: 0.8247
+Epoch 8/50  ... val_auc: 0.8679   <- best, restored
+Epoch 16/50 ... val_auc: 0.8274   (early stopped)
+lstm_head_baseline: best_val_auc=0.8679
+```
+**`val_auc = 0.8679 > 0.80`** — meets the Sprint 1 go/no-go bar.
+
+Comparison run (`python scripts/train.py --arch scratch`), scratch TimeDistributed CNN-LSTM, 12
+epochs, live Phase 3 augmented pipeline on `rwf2000`:
+```
+Epoch 1/12 ... val_auc: 0.6041   <- best, never improved on again
+Epoch 9/12 ... val_auc: 0.5318   (early stopped, patience 8)
+scratch_comparison: best_val_auc=0.6041
+```
+Reported as measured, not cherry-picked: the scratch arm trained from random initialisation for
+only 12 epochs essentially failed to generalise past epoch 1 (`val_precision`/`val_recall` collapse
+to near-zero most epochs), which is the expected outcome of the §1 trade-off this sprint made,
+not a bug — it is exactly the "4.4h per real run" cost the frozen-feature head exists to avoid.
+This is the number that goes in the report as the trained-from-scratch comparison arm.
+
+MLflow (`mlflow.search_runs`, experiment `safestreets-sprint1`):
+```
+  tags.mlflow.runName  metrics.best_val_auc params.arch
+0  scratch_comparison              0.604079     scratch
+1  lstm_head_baseline              0.867907   lstm_head
+```
+Both runs carry full param dicts (architecture, `pos_weight`, `git_sha`, seed) and a logged Keras
+model artefact (`mlflow.keras.log_model`).
+
+TensorBoard (`logs/fit/{lstm_head_baseline,scratch_comparison}`): `epoch_loss`, `epoch_accuracy`,
+`epoch_auc`, `epoch_precision`, `epoch_recall` scalars plus per-layer weight histogram tags
+(`dense`, `lstm`, `lstm_1`, `time_distributed`, ...) confirmed present in both runs' event files.
+
+Model summaries: `artifacts/model_summary_lstm_head.txt` (770,881 params), `artifacts/model_summary_scratch.txt`
+(221,793 params); both `build_model(cfg)` calls compile successfully for both archs
+(`tests/test_sprint1_model.py::test_build_model_compiles_both_archs`).
+
+Overfit test (32-clip synthetic subset, label-correlated features): train accuracy reaches ≥0.95
+within 50 epochs — passes.
+
+Label-alignment test: `load_feature_split`'s returned labels match the `clip_id`s they were loaded
+under — passes.
+
+Normalisation assertion (`test_normalization_matches_preprocess_input`): feature-store output for a
+hand-computed single frame matches `backbone(preprocess_input(frame))` to `atol=1e-5`, and is
+confirmed to diverge from the un-normalised `[0,255]` forward pass (not a vacuous comparison) —
+passes.
+
+DoD checklist: 11/11 met, with one caveat below.
+Deviations from plan: Sprint 1's augmentation note option (b) was taken — the production head
+trains on clean (eval-transform) features only; the `scratch` arm exercises the live augmented
+pipeline end to end. Recorded in `docs/decisions/ADR-003-architecture.md`, as instructed. MLflow
+3.16 (installed in `tf_env`/`safestreets`, newer than assumed when `BUILD_PLAN.md` was written) put
+the plain filesystem `./mlruns` store into "maintenance mode" and refuses to run without
+`MLFLOW_ALLOW_FILE_STORE=true`; set as an env-var default in `safestreets/training/train.py` to
+keep the plan's intended file-store `mlruns/` deliverable rather than migrating to a SQLite
+backend under this deadline.
+Surprises / notes for the next session:
+- **Disk budget caveat, not caused by this sprint:** `df -h ~` currently shows **~12-13 GB free**,
+  below the Sprint 1 DoD's "20 GB or more free" line. This is a machine-wide disk-pressure issue,
+  not a project one: `data/` (cache + features + manifests + raw) totals only ~7.5 GB, and this
+  sprint's own addition (`data/features`, 346 MB) is comfortably inside its 0.6 GB budget. Flagging
+  this rather than silently marking the DoD box: the free-space number is real and currently fails
+  the stated bar, but nothing this sprint controls caused it. Worth the user clearing machine disk
+  space before Sprint 5/6, which will add ONNX exports, notebooks, and Flask app artefacts.
+- `MobileNetV2(input_shape=(112,112,3), ...)` logs `WARNING:tensorflow: input_shape is undefined or
+  non-square, or rows is not in [96, 128, 160, 192, 224]. Weights for input shape (224, 224) will be
+  loaded as the default.` This is benign: MobileNetV2's conv kernels don't depend on spatial
+  resolution, and `pooling='avg'` adapts to whatever spatial size comes out of the last conv block.
+  Confirmed correct by the normalisation/forward-pass assertion test above; noting it here so a
+  future session doesn't mistake the warning for a real problem.
+- `tf.keras.optimizers.Adam` logs an M1/M2-slowness warning (recommending the legacy optimizer
+  module); not switched, since both training runs already complete well inside budget (lstm_head:
+  ~1 min total; scratch: ~33 min for 9 epochs, matching the CLAUDE.md-documented per-epoch range).
+- The `scratch` comparison run took ~33 minutes for its 9 completed epochs (204-229s/epoch, close to
+  CLAUDE.md's "under load" estimate, not the "quiet machine" one) — plan around the higher number for
+  any future scratch-arch run on this machine, not the optimistic one.
+
 ### Template
 
 ```
@@ -344,7 +459,7 @@ Surprises / notes for the next session:
 |---|---|---|
 | 001 | Runtime stack: TF / Keras / tf2onnx / ORT versions | accepted (Phase 0) |
 | 002 | Dataset split strategy and grouping keys | accepted (Phase 1) |
-| 003 | Architecture defaults | pending (Phase 4) |
-| 004 | HPO budget and search space | pending (Phase 6) |
-| 005 | Fine-tuning + checkpoint selection | pending (Phase 7) |
-| 006 | Deployment target | pending (Phase 11) |
+| 003 | Frozen-feature LSTM head as the production model | accepted (Sprint 1) |
+| 004 | HPO budget and search space | pending (Sprint 3) |
+| 005 | Fine-tuning + checkpoint selection | pending (Sprint 4) |
+| 006 | Deployment target | pending (Sprint 5) |

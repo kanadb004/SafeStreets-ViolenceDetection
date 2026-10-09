@@ -1,0 +1,24 @@
+# Sprint 1 model architectures. See docs/SPRINT_PLAN.md Sprint 1 and
+# docs/decisions/ADR-003-architecture.md for the frozen-feature decision.
+arch: lstm_head
+
+# safestreets.models.heads.build_lstm_head: trains on precomputed MobileNetV2
+# features (N, 16, 1280), never raw clips.
+lstm_head:
+  input_dim: 1280
+  n_frames: 16
+  units: 128
+  dropout: 0.4
+  learning_rate: 0.001
+
+# safestreets.models.cnn_lstm.build_scratch_cnn_lstm: report §4.3's literal
+# architecture, trained end to end on raw augmented clips (the comparison arm).
+scratch:
+  n_frames: 16
+  height: 112
+  width: 112
+  conv_filters: [32, 64, 128]
+  bottleneck_units: 256
+  lstm_units: 64
+  dropout: 0.4
+  learning_rate: 0.001

@@ -8,6 +8,12 @@ from pathlib import Path
 
 import yaml
 
+# ADR-001: TF 2.16.2 ships Keras 3, which tf2onnx cannot convert. Model code
+# must build/train with tf_keras, which requires this set before TensorFlow
+# is first imported anywhere in the process. Every model/training module
+# imports safestreets.config first, so this is the one bootstrap point.
+os.environ.setdefault("TF_USE_LEGACY_KERAS", "1")
+
 CONFIGS_DIR = Path(__file__).resolve().parent.parent / "configs"
 
 # Maps a dataclass field name to the env var that overrides it.
