@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-10-10 · by: sprint-6 session · commit: (pending, see Sprint 6 evidence)
+Last updated: 2026-10-10 · by: sprint-6 session · commit: `0c68d87`
 
 ---
 
@@ -795,7 +795,7 @@ Surprises / notes for the next session:
   fixture yields one window.
 
 ### Sprint 6 — Notebooks, results, model card
-Completed: 2026-10-10 · commit: (pending) · supersedes Phase 11
+Completed: 2026-10-10 · commit: `0c68d87` · supersedes Phase 11
 
 Exit gate: `make verify SPRINT=6 && make verify-all`
 Exit code: 0
