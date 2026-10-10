@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SafeStreets{% endblock %}</title>
+    {# Tailwind 1.9.6 vendored into static/vendor (legacy defect 5): rendering needs no network. #}
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/tailwind-1.9.6.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body class="bg-gray-100 text-gray-900 min-h-screen">
+    <nav class="bg-gray-900 text-white">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+            <a href="{{ url_for('main.index') }}" class="text-2xl font-bold">SafeStreets</a>
+            <div class="flex">
+                <a href="{{ url_for('main.index') }}" class="px-3 py-1 rounded hover:bg-gray-700">Analyse</a>
+                <a href="{{ url_for('main.about') }}" class="px-3 py-1 rounded hover:bg-gray-700">About</a>
+                <a href="{{ url_for('main.healthz') }}" class="px-3 py-1 rounded hover:bg-gray-700">Health</a>
+            </div>
+        </div>
+    </nav>
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

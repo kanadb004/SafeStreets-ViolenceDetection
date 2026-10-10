@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Result - SafeStreets{% endblock %}
+{% block content %}
+{% set violent = result.verdict == "violent" %}
+<div class="bg-white rounded-lg shadow p-6 mb-6">
+    <h1 class="text-3xl font-bold mb-4">Analysis result</h1>
+    <div id="verdict" class="p-4 rounded mb-4 {{ 'bg-red-100 text-red-900 border border-red-300' if violent else 'bg-green-100 text-green-900 border border-green-300' }}">
+        <div class="text-sm uppercase tracking-wide">Verdict</div>
+        <div class="text-2xl font-bold">{{ "Violent" if violent else "Non-violent" }}</div>
+    </div>
+    <table class="w-full text-left">
+        <tr><th class="pr-4 py-1">Clip score</th><td id="clip-score">{{ "%.4f" | format(result.clip_score) }}</td></tr>
+        <tr><th class="pr-4 py-1">Operating threshold</th><td>{{ "%.4f" | format(result.threshold) }}</td></tr>
+        <tr><th class="pr-4 py-1">Alert band (enter / leave)</th><td>{{ "%.4f" | format(result.enter_threshold) }} / {{ "%.4f" | format(result.leave_threshold) }}</td></tr>
+        <tr><th class="pr-4 py-1">Alert events in timeline</th><td>{{ result.alert_events }}</td></tr>
+        <tr><th class="pr-4 py-1">Frames decoded</th><td>{{ result.n_frames_decoded }} at {{ "%.1f" | format(result.fps) }} fps, every {{ result.frame_step }} kept</td></tr>
+        <tr><th class="pr-4 py-1">Model</th><td><code>{{ result.model_version }}</code></td></tr>
+    </table>
+    {% if result.short_video %}
+    <p class="text-sm text-gray-600 mt-3">This video is shorter than one sliding window, so the timeline holds a single window equal to the whole-clip score.</p>
+    {% endif %}
+</div>
+
+<div class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-xl font-bold mb-3">Per-window timeline</h2>
+    <p class="text-sm text-gray-600 mb-4">Raw window score (bar), EMA-smoothed score, and whether the hysteresis alert latch is active. The marker shows the operating threshold.</p>
+    <table id="timeline" class="w-full text-sm">
+        <thead>
+            <tr class="text-left text-gray-600">
+                <th class="py-1 pr-2">#</th><th class="py-1 pr-2">Time (s)</th><th class="py-1 pr-2 w-1/2">Raw score</th>
+                <th class="py-1 pr-2">Smoothed</th><th class="py-1">Alert</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for w in result.windows %}
+            <tr class="border-t border-gray-200">
+                <td class="py-1 pr-2">{{ w.index }}</td>
+                <td class="py-1 pr-2">{% if w.start_s is not none %}{{ "%.2f" | format(w.start_s) }} to {{ "%.2f" | format(w.end_s) }}{% else %}frames {{ w.start_frame }} to {{ w.end_frame }}{% endif %}</td>
+                <td class="py-1 pr-2">
+                    <div class="score-track">
+                        <div class="score-bar {{ 'bg-red-500' if w.raw_score >= result.threshold else 'bg-blue-500' }}" style="width: {{ (w.raw_score * 100) | round(1) }}%"></div>
+                        <div class="score-threshold" style="left: {{ (result.threshold * 100) | round(1) }}%"></div>
+                    </div>
+                    <span class="text-xs text-gray-600">{{ "%.3f" | format(w.raw_score) }}</span>
+                </td>
+                <td class="py-1 pr-2">{{ "%.3f" | format(w.smoothed_score) }}</td>
+                <td class="py-1">{% if w.alert_active %}<span class="px-2 rounded bg-red-200 text-red-900">{{ "start" if w.alert_started else "on" }}</span>{% else %}<span class="text-gray-500">off</span>{% endif %}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('main.index') }}" class="inline-block mt-6 text-blue-700 hover:underline">Analyse another video</a>
+</div>
+{% endblock %}

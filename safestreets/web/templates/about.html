@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}About - SafeStreets{% endblock %}
+{% block content %}
+<div class="bg-white rounded-lg shadow p-6">
+    <h1 class="text-3xl font-bold mb-4">About SafeStreets</h1>
+    <p class="mb-3">
+        SafeStreets is an academic violence-detection prototype for a women's-safety CCTV context.
+        Each 16 frame window is resized with letterboxing, passed through a frozen ImageNet MobileNetV2
+        for per-frame features, and scored by an LSTM head fine-tuned on AIRTLab. Both stages run as a
+        single ONNX graph in ONNX Runtime on the CPU.
+    </p>
+    <p class="mb-3">
+        A score is a model probability, not a fact about the footage. The operating threshold was chosen on a
+        validation split, and the model has known blind spots, recorded in the project's results and ethics
+        documents. A human should review any alert before acting on it.
+    </p>
+</div>
+{% endblock %}

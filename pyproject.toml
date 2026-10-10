@@ -62,6 +62,10 @@ ml = [
 [tool.setuptools.packages.find]
 include = ["safestreets*"]
 
+# Sprint 5 Flask app: templates and the vendored Tailwind build ship with the package.
+[tool.setuptools.package-data]
+"safestreets.web" = ["templates/*.html", "static/*.css", "static/vendor/*.css"]
+
 [tool.pytest.ini_options]
 markers = [
     "phase0: Phase 0 - foundation",

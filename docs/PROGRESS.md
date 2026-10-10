@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-10-10 · by: sprint-4 session · commit: `25bf12d`
+Last updated: 2026-10-10 · by: sprint-5 session · commit: see Sprint 5 evidence block
 
 ---
 
@@ -38,7 +38,7 @@ Phases 4 to 11. **This is the board to read.**
 | 2 | Evaluation harness | `DONE` | ✓ | test AUC 0.9450 combined; AIRTLab zero-shot AUC 0.5259 (big drop, real); no frame-level AUC, see SPRINT_PLAN §2 |
 | 3 | Optuna HPO | `DONE` | ✓ | 30 trials (23 complete, 7 pruned), ~32 min measured; tuned val_auc 0.8857 but test AUC 0.9418 < baseline 0.9450, baseline ships (no cherry-picking), see ADR-004 |
 | 4 | AIRTLab fine-tune + attribution | `DONE` | ✓ | AIRTLab 5-fold CV AUC 0.8976 (vs 0.5259 zero-shot); RWF-2000 forgetting -0.0582 AUC, fine-tuned checkpoint ships (ADR-005); YOLOv8n+ByteTrack person tracking + zero-shot CLIP gender, accuracy NOT RUN (no gender ground truth), see docs/ETHICS.md |
-| 5 | ONNX, real-time, Flask app | `NOT_STARTED` | x | closes the 5 legacy defects |
+| 5 | ONNX, real-time, Flask app | `DONE` | ✓ | bundled MobileNetV2+head ONNX, parity 5.24e-05 over 325 real clips, AUC diff 0.0; p95 134.41 ms/window, 59.5 sampled fps (ADR-006); legacy `app/` deleted, all 5 defects closed |
 | 6 | Notebooks, results, model card | `NOT_STARTED` | x | **the submission** |
 
 ---
@@ -56,7 +56,7 @@ Fill these in **only** from a committed `artifacts/reports/eval_*.json`. `NOT RU
 | Frame-level AUC (untrimmed) | `NOT RUN` (out of scope, see SPRINT_PLAN §2) | — | 5 |
 | AIRTLab fine-tuned accuracy (5-fold) | `0.8486 +/- 0.0439` (AUC `0.8976 +/- 0.0429`) | `artifacts/reports/eval_finetuned.json` | 7 |
 | Gender module accuracy | `NOT RUN` (zero-shot CLIP, no gender ground truth in this pipeline, see docs/ETHICS.md) | — | 8 |
-| ONNX p95 latency / sustainable FPS | `NOT RUN` | — | 9 |
+| ONNX p95 latency / sustainable FPS | `134.41 ms` per 16 frame window (p50 111.08, p99 167.90); `59.5` sampled frames/s at stride 8 | `artifacts/reports/latency.json` | Sprint 5 |
 
 ---
 
@@ -666,6 +666,134 @@ Surprises / notes for the next session:
   "results will accumulate in RAM" warning per clip; harmless at 48 short clips, would need
   `stream=True` if a future sprint runs this over the full corpus.
 
+### Sprint 5 — ONNX, real-time, Flask app
+Completed: 2026-10-10 · commit: see the follow-up `docs:` commit · supersedes Phases 9/10
+Exit gate: `make verify SPRINT=5`
+Exit code: 0
+
+```
+ruff check .
+All checks passed!
+pytest -m "phase0 or phase1 or phase2 or phase3 or sprint1  or sprint2  or sprint3  or sprint4  or sprint5" -q
+........................................................................ [ 56%]
+.......................................................                  [100%]
+127 passed in 206.66s (0:03:26)
+```
+
+ONNX export, parity and latency (`python scripts/export_onnx.py`, seed 1265, exit 0). The
+exported graph is the **whole** inference path, not just the head: raw letterboxed RGB frames
+`(N, 16, 112, 112, 3)` in [0, 255], then `Rescaling(1/127.5, -1)` (MobileNetV2 `preprocess_input`),
+then `TimeDistributed(MobileNetV2)`, then the ADR-005 fine-tuned head. Serving needs no
+TensorFlow (ADR-006).
+```
+exported .../artifacts/onnx/safestreets_finetuned_airtlab.onnx (12002918 bytes) in 11.7s
+engine loaded: model_version=finetuned_airtlab-73ebf22e032d git_sha=d8b8335c2c63a194687326504ce527536673f833
+parity: n=325 max_abs_diff=5.244e-05 (tol 0.0001) passed=True
+roc_auc keras=0.969105 onnx=0.969105 diff=0.00e+00 passed=True
+bundled keras vs feature store + head: 2.086e-06
+latency per window: p50=111.08ms p95=134.41ms p99=167.90ms  sustainable_fps=59.5 (stride 8), headroom x18.6 over target_fps 3.2
+{"loadavg_before": [1.71142578125, 1.7314453125, 1.974609375]}
+```
+- Parity set: every clip of the combined RLVS + AIRTLab + UCF-Crime test split from the Phase 2
+  clip cache (325 clips, 175 positive). `onnx_parity.json` also has mean abs diff 1.218e-06 and
+  p99 abs diff 1.907e-05. The 0.9691 AUC is a **runtime agreement check, not a generalisation
+  number**: AIRTLab test clips were in the ADR-005 fine-tune pool. Do not quote it as a result.
+- `bundled keras vs feature store + head 2.086e-06`: the bundled graph reproduces the Sprint 1
+  feature store followed by the head, so it is not a drifted reimplementation.
+- Latency: `InferenceEngine.predict_windows` on one window, 300 timed iterations after 20 warmup,
+  onnxruntime 1.18.1 `CPUExecutionProvider`, M2, load average 1.7 at start. Excludes decode and
+  letterbox. Sustainable FPS = `stride * 1000 / p95_ms` (one window per 8 sampled frames). The
+  stream samples source video down to `target_fps: 3.2` (16 frames over the ~5 s median training
+  clip, from the manifest's `duration_s`), so 59.5 sampled fps is 18.6x real time.
+
+Flask app, real engine, `test/sample_video.avi` (30 frames, 30 fps, 1280x720), via the test
+client:
+```
+GET / -> 200
+GET /healthz -> {'git_sha': 'd8b8335c2c63a194687326504ce527536673f833', 'model_version': 'finetuned_airtlab-73ebf22e032d', 'status': 'ok', 'threshold': 0.2}
+POST /api/analyse -> 200
+{"alert_events": 1, "clip_score": 0.8565809726715088, "enter_threshold": 0.25, "fps": 30.0, "frame_step": 9, "leave_threshold": 0.15000000000000002, "model_version": "finetuned_airtlab-73ebf22e032d", "n_frames_decoded": 30, "padded": false, "short_video": true, "threshold": 0.2, "verdict": "violent"}
+```
+(This 1 s fixture is shorter than one 16 frame window at 3.2 fps, so its timeline is one window
+equal to the whole-clip score. The streaming path is covered by unit tests.)
+
+Legacy defects closed:
+1. `app/routes.py` imported a `predict_video` that did not exist. `app/` is deleted, and
+   `safestreets/web` (`create_app()`, `routes.py`, `api.py`) calls `InferenceEngine`. `run.py`
+   now imports `safestreets.web.create_app` and still serves on port 3000.
+2. The result was discarded. `POST /analyse` renders `result.html` with the verdict, the clip
+   score and a per-window timeline (raw score bar with a threshold marker, EMA-smoothed score,
+   alert latch). `POST /api/analyse` returns the same as JSON.
+3. Uploads had no limits. Now `MAX_CONTENT_LENGTH` is 50 MB (`configs/serve.yaml`, 413), the
+   extension is allowlisted (415), OpenCV must decode a frame (415), the file gets a UUID name in
+   a temp dir, and it is unlinked in a `finally`. Tests assert removal on success and when the
+   engine raises.
+4. `test/test_predict.py` (`/2300.0` normalisation) is deleted. `test/sample_video.avi` stays
+   as the DoD fixture. It is untracked (`*.avi` is gitignored), so the tests that use it are
+   `needs_data`.
+5. Tailwind came from a CDN. Tailwind 1.9.6's `tailwind.min.css` (the version `^1.0` resolved to)
+   is now vendored at `safestreets/web/static/vendor/tailwind-1.9.6.min.css` (1967618 bytes,
+   sha256 `b1ad2f9d383ef7e0adb2760405b4a8518ae632f1e7efdd2963bec491c44e2f69`, no external `url()`
+   or `@import`). A test fetches every asset `/` references from the app itself.
+
+DoD checklist: 12/12 met.
+- ONNX export succeeds and loads in onnxruntime; max abs diff 5.244e-05 < 1e-4 over 325 real
+  clips (`onnx_parity.json`).
+- ONNX ROC-AUC equals the Keras ROC-AUC (diff 0.0, tolerance 0.005).
+- `latency.json` has p50/p95/p99 and implied sustainable FPS.
+- Hysteresis: `test_oscillating_raw_scores_produce_one_alert_not_many` and
+  `test_oscillation_with_shipped_stream_config_alerts_once`. With the shipped config, the series
+  has 15 naive single-threshold crossings and raises 1 alert.
+- Sidecar complete. The engine raises `SpecMismatchError` on normalisation, n_frames, channel
+  order, input_dim, threshold or a missing section, before it opens the model file (6
+  parametrised cases).
+- `GET /` 200; `GET /healthz` returns model_version and git_sha.
+- `POST /api/analyse` with `test/sample_video.avi` returns a schema-valid body, clip_score
+  0.8566.
+- 4xx tests: no file (400), wrong extension (415), oversized (413), non-decodable (415).
+- Upload removal asserted after success and after an engine failure.
+- Result page HTML is matched for the verdict and `id="clip-score">0.8100<`.
+- `grep -r "from app" .` finds no code. The only matches are `docs/BUILD_PLAN.md` and
+  `docs/SPRINT_PLAN.md`, which quote this check, plus this line. No template references an
+  external URL.
+- Cumulative gate green: 127 passed.
+
+Deviations from plan:
+- The ONNX artefact bundles MobileNetV2 and the head in one graph rather than exporting the head
+  alone, so `InferenceEngine` really runs over onnxruntime with no TensorFlow (the Sprint 5
+  deliverable says "bundling MobileNetV2 features plus the head"). ADR-006 records the
+  reasoning.
+- The legacy `contact.html` was dropped, not ported. Its form posted to a `/submit_form` route
+  that never existed. `about.html` was rewritten with plain claims.
+- Flask is already a core `[project] dependencies` entry in `pyproject.toml`, so it was not added
+  to the `ml`/`ci` extras a second time. Added `[tool.setuptools.package-data]` so the templates
+  and the vendored CSS ship with a non-editable install.
+- Notebook execution (CLAUDE.md step 6): NOT RUN, because there are none. The only notebook is
+  `notebooks/legacy/train_model.ipynb`, which is Colab-bound reference outside the gate.
+  Sprint 6 creates the six.
+- Committed straight to `main` under deadline pressure, as Sprints 1 to 4 were. No issue or PR.
+
+Surprises / notes for the next session:
+- **Threshold provenance.** `configs/infer.yaml`'s `threshold: 0.2` was selected on validation
+  for the Sprint 1 **baseline** (last written by `1ac1862`). It was never re-selected for the
+  ADR-005 fine-tuned checkpoint that now ships. The sidecar and the app use 0.2 unchanged.
+  Sprint 6 should disclose this in the model card, or re-select on validation and re-export.
+  The engine will refuse the old artefact until it is re-exported.
+- The sidecar's `git_sha` is `d8b8335` with `git_dirty: true`, because the export ran before the
+  Sprint 5 commit existed. `onnx_sha256` and `source_checkpoint_sha256` pin the artefact.
+  `model_version` is `<tag>-<first 12 hex of checkpoint sha256>`.
+- `artifacts/` is gitignored, so the 12 MB `.onnx`, the sidecar and both reports exist only
+  locally, like every earlier checkpoint. A fresh clone must run `python scripts/export_onnx.py`
+  (about 2 min) before the app can serve. Disk: `df -h` showed 78 GiB free at session start and
+  75 GiB after. `artifacts/onnx/` is 11 MB.
+- Parity margin is about 2x (5.24e-05 against 1e-4). The residual is float32 accumulation through
+  MobileNetV2 + 2 LSTMs, not the device: forcing tf_keras onto `/CPU:0` gave 3.21e-05, Metal
+  `/GPU:0` gave 5.24e-05, and the two Keras devices differ by 2.03e-05 from each other.
+- For `06_inference_and_demo.ipynb`: `InferenceEngine().analyse_video(path)` returns the full
+  timeline dict, and `safestreets.web.create_app().test_client()` drives the app with no server.
+  Use a longer real clip from the manifest for the sliding-window demo, because the 1 s
+  fixture yields one window.
+
 ### Template
 
 ```
@@ -701,4 +829,4 @@ Surprises / notes for the next session:
 | 003 | Frozen-feature LSTM head as the production model | accepted (Sprint 1) |
 | 004 | HPO budget and search space | accepted (Sprint 3) |
 | 005 | Fine-tuning + checkpoint selection | accepted (Sprint 4) |
-| 006 | Deployment target | pending (Sprint 5) |
+| 006 | Deployment target: bundled ONNX in ONNX Runtime, served by Flask | accepted (Sprint 5) |

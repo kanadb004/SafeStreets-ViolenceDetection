@@ -1,0 +1,44 @@
+# Sprint 5 serving config: ONNX export, streaming inference, Flask app.
+# See docs/SPRINT_PLAN.md Sprint 5 and docs/decisions/ADR-006-deployment-target.md.
+# The operating threshold is NOT here: it lives in configs/infer.yaml (selected on
+# val in Sprint 2) and everything below derives from that single number.
+
+onnx:
+  # ADR-005: the AIRTLab fine-tuned head is the shipped checkpoint.
+  checkpoint: artifacts/checkpoints/finetuned_airtlab_lstm_head.keras
+  tag: finetuned_airtlab
+  out_dir: artifacts/onnx
+  opset: 13
+  # Parity / ROC-AUC check runs over the combined test split's raw uint8 clips
+  # (Phase 2 cache), the same three datasets as Sprint 2's eval_test.json.
+  parity_datasets: [rlvs, airtlab, ucfcrime]
+  parity_split: test
+
+stream:
+  # Window length is not configured here: it is configs/preprocess.yaml's
+  # n_frames, so the stream can never disagree with what the model was trained on.
+  stride: 8
+  # EMA over per-window scores: smoothed = alpha * raw + (1 - alpha) * smoothed.
+  # 0.3 weights the newest window at 30%, so one outlier window cannot raise an
+  # alert alone while a sustained rise still does within a few windows.
+  ema_alpha: 0.3
+  # Hysteresis band around configs/infer.yaml's threshold:
+  #   enter alert when smoothed >= threshold + margin
+  #   leave alert when smoothed <  threshold - margin
+  hysteresis_margin: 0.05
+  # Training clips are 16 frames sampled uniformly over a ~5 s clip (manifest
+  # median duration_s: rwf2000 5.0, rlvs 5.0, airtlab 5.3), i.e. 16 / 5 = 3.2
+  # frames per second of video. The stream subsamples input video to this rate so
+  # each 16 frame window spans the same wall-clock duration the model saw in
+  # training, rather than 0.5 s of 30 fps footage.
+  target_fps: 3.2
+
+web:
+  # 50 MB covers a few minutes of compressed CCTV footage, comfortably above the
+  # ~5 s clips the model was trained on, while bounding decode time and temp disk
+  # use per request on a CPU-only single-process server.
+  max_content_mb: 50
+  allowed_extensions: [mp4, avi, mov, mkv]
+  # null -> <system temp dir>/safestreets_uploads. Files are UUID-named and
+  # deleted after every request, success or failure.
+  upload_dir: null

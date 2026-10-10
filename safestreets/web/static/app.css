@@ -1,0 +1,22 @@
+/* Small additions on top of the vendored Tailwind 1.9.6 build: the per-window
+   score bars on the result page, which need absolute positioning for the
+   threshold marker. */
+.score-track {
+    position: relative;
+    height: 0.75rem;
+    background: #e2e8f0;
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+.score-bar {
+    height: 100%;
+}
+
+.score-threshold {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #1a202c;
+}
