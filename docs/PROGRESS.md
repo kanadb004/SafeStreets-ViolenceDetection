@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-10-10 · by: sprint-5 session · commit: see Sprint 5 evidence block
+Last updated: 2026-10-10 · by: sprint-5 session · commit: `286bf3c`
 
 ---
 
@@ -667,7 +667,7 @@ Surprises / notes for the next session:
   `stream=True` if a future sprint runs this over the full corpus.
 
 ### Sprint 5 — ONNX, real-time, Flask app
-Completed: 2026-10-10 · commit: see the follow-up `docs:` commit · supersedes Phases 9/10
+Completed: 2026-10-10 · commit: `286bf3c` · supersedes Phases 9/10
 Exit gate: `make verify SPRINT=5`
 Exit code: 0
 
