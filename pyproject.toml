@@ -24,6 +24,10 @@ dependencies = [
 dev = [
     "pytest",
     "ruff",
+    "nbconvert",
+    "nbclient",
+    "nbformat",
+    "ipykernel",
 ]
 # Portable (non-macOS) stand-ins for the `ml` extra below, just enough to run
 # Phase 3+'s tf.data/Albumentations tests in CI (ubuntu-latest). `tensorflow-macos`/

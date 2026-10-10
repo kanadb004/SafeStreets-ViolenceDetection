@@ -33,8 +33,11 @@ verify-all:
 	pytest -q
 
 # Execute every notebook in place so committed outputs are never stale.
+# `python -m nbconvert`, not the `jupyter` meta-launcher: `jupyter nbconvert` execs
+# whatever `jupyter-nbconvert` it finds first on PATH, which silently picked a
+# different Python (and a kernel missing albumentations/tensorflow) during Sprint 6.
 notebooks:
 	@for nb in notebooks/*.ipynb; do \
 	  echo "executing $$nb"; \
-	  jupyter nbconvert --execute --inplace --ExecutePreprocessor.timeout=600 "$$nb" || exit 1; \
+	  python -m nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=600 "$$nb" || exit 1; \
 	done

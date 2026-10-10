@@ -6,7 +6,7 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-10-10 · by: sprint-5 session · commit: `286bf3c`
+Last updated: 2026-10-10 · by: sprint-6 session · commit: (pending, see Sprint 6 evidence)
 
 ---
 
@@ -39,7 +39,7 @@ Phases 4 to 11. **This is the board to read.**
 | 3 | Optuna HPO | `DONE` | ✓ | 30 trials (23 complete, 7 pruned), ~32 min measured; tuned val_auc 0.8857 but test AUC 0.9418 < baseline 0.9450, baseline ships (no cherry-picking), see ADR-004 |
 | 4 | AIRTLab fine-tune + attribution | `DONE` | ✓ | AIRTLab 5-fold CV AUC 0.8976 (vs 0.5259 zero-shot); RWF-2000 forgetting -0.0582 AUC, fine-tuned checkpoint ships (ADR-005); YOLOv8n+ByteTrack person tracking + zero-shot CLIP gender, accuracy NOT RUN (no gender ground truth), see docs/ETHICS.md |
 | 5 | ONNX, real-time, Flask app | `DONE` | ✓ | bundled MobileNetV2+head ONNX, parity 5.24e-05 over 325 real clips, AUC diff 0.0; p95 134.41 ms/window, 59.5 sampled fps (ADR-006); legacy `app/` deleted, all 5 defects closed |
-| 6 | Notebooks, results, model card | `NOT_STARTED` | x | **the submission** |
+| 6 | Notebooks, results, model card | `DONE` | ✓ | six notebooks executed with saved outputs; model card, reproduce guide, presentation guide, README rewrite, architecture figure, requirements disposition all written; see Evidence log |
 
 ---
 
@@ -794,6 +794,108 @@ Surprises / notes for the next session:
   Use a longer real clip from the manifest for the sliding-window demo, because the 1 s
   fixture yields one window.
 
+### Sprint 6 — Notebooks, results, model card
+Completed: 2026-10-10 · commit: (pending) · supersedes Phase 11
+
+Exit gate: `make verify SPRINT=6 && make verify-all`
+Exit code: 0
+
+```
+ruff check .
+All checks passed!
+pytest -m "phase0 or phase1 or phase2 or phase3 or sprint1  or sprint2  or sprint3  or sprint4  or sprint5  or sprint6" -q
+........................................................................ [ 50%]
+.......................................................................  [100%]
+143 passed in 242.30s (0:04:02)
+```
+
+```
+make verify-all
+ruff check .
+All checks passed!
+pytest -q
+........................................................................ [ 50%]
+.......................................................................  [100%]
+143 passed in 235.29s (0:03:55)
+```
+
+Six notebooks built and executed via `python -m nbconvert --to notebook --execute --inplace`
+(not the `jupyter` meta-launcher — see "things that will bite" below), each under a minute, well
+inside the 5-minute DoD budget:
+
+| Notebook | Wall time (this run) | Key live-verified numbers |
+|---|---|---|
+| `01_data_and_preprocessing.ipynb` | ~10s | 4336 clips, 3873 groups; leakage assertion passed for all 4 datasets; train cache 3268 clips |
+| `02_augmentation.ipynb` | ~11s | identical-frames proof passed; live throughput 192.9 clips/s (vs. the 200 clips/s test floor, same ballpark) |
+| `03_model_and_training.ipynb` | ~8s | lstm_head 770,881 params, scratch_cnn_lstm 221,793 params; pos_weight 0.9973/1.0; TensorBoard histograms decoded live from the real `.tfevents` |
+| `04_evaluation.ipynb` | ~20s | live re-score from the checkpoint + feature store asserted equal (2 dp) to the committed `eval_test.json` |
+| `05_hpo_and_finetune.ipynb` | ~4s | Optuna study loaded live from `study.db` (30 trials, best_val_auc 0.8857); AIRTLab CV and forgetting numbers match ADR-005 exactly |
+| `06_inference_and_demo.ipynb` | ~45s | fail-safe invariant proven live (p_violence=0.99, gender forced all-man, alert still fires); ONNX parity/latency loaded; live sliding-window score on a real AIRTLab clip (0.9923, verdict "violent"); Flask test client end to end, 200/200 |
+
+`docs/MODEL_CARD.md`, `docs/REPRODUCE.md`, `docs/PRESENTATION_GUIDE.md` written.
+`docs/RESULTS.md` regenerated (`safestreets.evaluation.report.generate()`); byte-identical to the
+Sprint 2-5 version, confirming no committed artefact drifted. `README.md` fully rewritten with a
+results table that is tested (`tests/test_sprint6_submission.py`) to match `docs/RESULTS.md`
+exactly. `artifacts/figures/architecture.png` generated
+(`matplotlib`, not hand-drawn/fabricated structure — every box names the real module it
+describes). `docs/PROGRESS.md`'s new "Requirements disposition" section marks all 14 rows of
+`BUILD_PLAN.md` §2 delivered, scaled down, or cut, each with a pointer, and is itself asserted
+complete by a test.
+
+DoD checklist: 9/9 met (`docs/SPRINT_PLAN.md` Sprint 6).
+- All six notebooks execute top to bottom from a clean kernel with outputs saved. ✓ (asserted by
+  `tests/test_sprint6_submission.py::test_notebook_exists_and_has_no_cached_errors`)
+- No notebook contains a copy-pasted reimplementation of package code. ✓ (every notebook imports
+  from `safestreets`; a lint-style test greps for banned re-definitions)
+- No notebook takes more than 5 minutes to execute. ✓ (longest is `06_inference_and_demo.ipynb`
+  at ~45s, including a live YOLOv8n + CLIP model load and a live ONNX session)
+- Every number displayed comes from a committed artefact or a live call. ✓ — enforced in review,
+  not just asserted: every metric in every notebook traces to `artifacts/reports/*.json`, a live
+  `safestreets.*` call, or a decoded `.tfevents`/`study.db` file, never a typed literal.
+- `README.md`'s results table matches `docs/RESULTS.md` exactly. ✓ (tested)
+- Model card covers the AIRTLab synthetic-data limitation and the zero-shot gender module's
+  weakness. ✓ (`docs/MODEL_CARD.md` "Limitations" and "Attribution modules" sections)
+- Every row of `BUILD_PLAN.md` §2's requirements table dispositioned. ✓ (new PROGRESS.md section,
+  tested)
+- `docs/PRESENTATION_GUIDE.md` written. ✓
+- `pytest` all markers green. ✓ (143 passed under `SPRINT_EXPR`; full suite green under
+  `verify-all`)
+
+Deviations from plan:
+- `jupyter nbconvert` (the meta-launcher) silently resolved to a *different* Python
+  (`/Library/Frameworks/Python.framework/...`, missing albumentations/tensorflow/nbconvert
+  itself) rather than the `safestreets` conda env's interpreter, because the `safestreets` env
+  had no `jupyter-nbconvert` executable of its own and `jupyter`'s subcommand dispatch execs
+  whatever `jupyter-<subcommand>` it finds first on `PATH`. Fixed two ways: (1) installed
+  `nbconvert`/`nbclient`/`nbformat`/`ipykernel` into the `dev` extra in `pyproject.toml`, so a
+  fresh `pip install -e ".[dev]"` has them; (2) changed the `Makefile`'s `notebooks` target from
+  `jupyter nbconvert ...` to `python -m nbconvert ...`, which always resolves against the active
+  interpreter's own installed packages, not whatever is first on `PATH`. CLAUDE.md's pip-install
+  list for Phase 0 setup did not mention `open_clip_torch` either, despite
+  `safestreets/attribution/gender.py` depending on it at runtime; it was already present in this
+  machine's `safestreets` env from an earlier session, so this went unnoticed until writing
+  `docs/REPRODUCE.md` from scratch. `docs/REPRODUCE.md`'s pip install line is now the complete,
+  checked list.
+- Ruff lints notebooks (not excluded from `extend-exclude`, unlike `notebooks/legacy`), so every
+  notebook needed `# noqa: E402` on the imports that necessarily follow the `os.chdir(REPO_ROOT)`
+  / `sys.path.insert` setup cell, plus some line-length wrapping. No logic changed, only
+  formatting.
+- Committed straight to `main` under deadline pressure, as Sprints 1 to 5 were. No issue or PR.
+
+Surprises / notes for the next session:
+- The attribution pipeline (YOLOv8n + ByteTrack + zero-shot CLIP) took ~12-16s wall time per clip
+  live in `06_inference_and_demo.ipynb`, dominated by `track_video`'s per-frame YOLO inference;
+  this is fine once (well under the 5-minute notebook budget) but would matter for a "run on N
+  clips" demo.
+- `scripts/evaluate.py`'s `safestreets.evaluation.report.generate()` reproduced `docs/RESULTS.md`
+  byte-for-byte from the already-committed `artifacts/reports/*.json`, which is itself a useful
+  check: nothing in those reports drifted since Sprint 2-5.
+- `artifacts/figures/architecture.png` (like every other figure) is gitignored along with the
+  rest of `artifacts/`; a fresh clone needs to regenerate it
+  (`scratchpad` script used this session is not checked in, since it's a one-off rendering
+  script, not a reusable `scripts/` entry point — a future session wanting to regenerate it
+  should write a small `scripts/make_architecture_figure.py` if this becomes a recurring need).
+
 ### Template
 
 ```
@@ -830,3 +932,27 @@ Surprises / notes for the next session:
 | 004 | HPO budget and search space | accepted (Sprint 3) |
 | 005 | Fine-tuning + checkpoint selection | accepted (Sprint 4) |
 | 006 | Deployment target: bundled ONNX in ONNX Runtime, served by Flask | accepted (Sprint 5) |
+
+---
+
+## Requirements disposition (BUILD_PLAN.md §2)
+
+Sprint 6 DoD: every row of `docs/BUILD_PLAN.md` §2's target-system table, marked delivered,
+scaled down, or cut, with a pointer to where it is covered.
+
+| Requirement (BUILD_PLAN §2) | Status | Where covered |
+|---|---|---|
+| RWF-2000 + RLVS as primary binary sources | **Delivered** | `docs/DATASETS.md`; trained on in Sprint 1, `notebooks/01_data_and_preprocessing.ipynb` |
+| AIRTLab for women-specific fine-tuning and evaluation | **Delivered** | Sprint 4, `docs/decisions/ADR-005-finetune-and-attribution.md`, `notebooks/05_hpo_and_finetune.ipynb` |
+| UCF-Crime + XD-Violence for crime-category breadth + frame-level eval | **Scaled down / cut** | UCF-Crime: delivered as a small 35-clip subset for cross-dataset eval only (`docs/DATASETS.md`). XD-Violence: **cut**, 38.3 GB over the ~44 GB disk budget, permanently skipped (`docs/DATASETS.md`, blocked items above). Frame-level eval is therefore also cut, see `docs/SPRINT_PLAN.md` §2 and `docs/RESULTS.md` limitations. |
+| OpenCV frame extraction, resize, normalise, temporal padding/sampling | **Delivered** | Phase 2, `safestreets/data/preprocess.py`, `notebooks/01_data_and_preprocessing.ipynb` |
+| Albumentations, applied consistently across frames within a clip | **Delivered** | Phase 3, `safestreets/data/augment.py`, live-proven in `notebooks/02_augmentation.ipynb` |
+| TimeDistributed CNN-LSTM; 2-3 conv blocks + pooling; stacked LSTM; dropout after LSTM | **Delivered (comparison arm)** | `safestreets/models/cnn_lstm.py`, trained as the `scratch` comparison arm (12 epochs, scaled down per `docs/SPRINT_PLAN.md` §2), not the production model; see `docs/decisions/ADR-003-architecture.md` and `notebooks/03_model_and_training.ipynb` |
+| Class-weighted binary cross-entropy | **Delivered** | `safestreets/training/losses.py`, used by both architectures, `notebooks/03_model_and_training.ipynb` |
+| Optuna Bayesian search over lr, LSTM units, dropout, batch size | **Delivered** | Sprint 3, `docs/decisions/ADR-004-hpo.md`, `notebooks/05_hpo_and_finetune.ipynb` |
+| MLflow: metrics, params, artefacts | **Delivered** | Sprint 1, `safestreets/training/train.py`/`callbacks.py`, `notebooks/03_model_and_training.ipynb` |
+| TensorBoard: loss curves, per-epoch accuracy, activation histograms | **Delivered** | Sprint 1, `histogram_freq=1` in `configs/train.yaml`, decoded live in `notebooks/03_model_and_training.ipynb` |
+| accuracy, precision, recall, F1, ROC-AUC on held-out and cross-dataset splits | **Delivered** | Sprint 2, `safestreets/evaluation/`, `docs/RESULTS.md`, `notebooks/04_evaluation.ipynb` |
+| ONNX export for efficient inference | **Delivered** | Sprint 5, `docs/decisions/ADR-006-deployment-target.md`, `notebooks/06_inference_and_demo.ipynb` |
+| SUSAN-style: general violence detector + person detection + gender module | **Delivered, with a noted gap** | Sprint 4; gender module is zero-shot CLIP, not a trained PA-100K classifier (**cut**, see `docs/SPRINT_PLAN.md` §2); accuracy is NOT RUN as a measured number, see `docs/ETHICS.md` and `docs/MODEL_CARD.md` |
+| Real-time CCTV input → binary classification → alert | **Delivered** | Sprint 5, `safestreets/inference/`, `safestreets/web/`, measured 59.5 sustainable fps / 18.6x real-time headroom, `notebooks/06_inference_and_demo.ipynb` |
