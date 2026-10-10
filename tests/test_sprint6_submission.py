@@ -131,7 +131,11 @@ def test_progress_md_requirements_table_fully_dispositioned():
 
 
 @pytest.mark.sprint6
+@pytest.mark.needs_data
 def test_architecture_figure_exists():
+    """`artifacts/` is gitignored (CLAUDE.md), so this figure exists only on a machine that
+    has generated it locally, same as every other artifacts/figures/*.png; a fresh CI checkout
+    has no local artifacts and must skip this, same as the other needs_data tests below."""
     fig = REPO_ROOT / "artifacts" / "figures" / "architecture.png"
     assert fig.exists(), "artifacts/figures/architecture.png is missing"
     assert fig.stat().st_size > 1000, "architecture.png looks empty"
