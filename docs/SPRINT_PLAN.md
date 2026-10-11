@@ -114,18 +114,21 @@ commit straight to `main` with the same message rules, and record that you did.*
   **Assert the choice in a test** so it cannot silently drift.
 
 **Definition of Done**
-- [ ] Feature store built for all 11 `(dataset, split)` pairs; `N_features == N_cached` per file.
-- [ ] `data/features` total size under 0.6 GB; `df -h ~` still shows 20 GB or more free.
-- [ ] Extraction is idempotent; a second run skips completed files in under 5 s.
-- [ ] Normalisation assertion test passes: features come from `preprocess_input`-scaled input, verified by comparing against a hand-computed single-clip forward pass.
-- [ ] `build_model(cfg)` compiles for both `lstm_head` and `scratch`; summaries saved to `artifacts/model_summary_{arch}.txt`.
-- [ ] Overfit test: the head reaches 0.95 or better train accuracy on a 32 clip subset within 50 epochs.
-- [ ] Label alignment test: a batch's labels match `clips.parquet` for those exact `clip_id`s.
-- [ ] Production run: head trained on RWF+RLVS train features, early stopped on `val_auc`, **`val_auc > 0.80`**. If unmet, record the real number and stop; do not proceed to Sprint 3.
-- [ ] Comparison run: scratch CNN-LSTM, 12 epochs, through the live augmented Phase 3 pipeline. Its `val_auc` is recorded for the report whatever it is.
-- [ ] MLflow has both runs with params, per-epoch metrics, and model artefacts.
-- [ ] TensorBoard shows loss, accuracy, and weight histograms.
-- [ ] `pytest -m "phase0 or phase1 or phase2 or phase3 or sprint1"` green.
+- [x] Feature store built for all 11 `(dataset, split)` pairs; `N_features == N_cached` per file.
+- [x] `data/features` total size under 0.6 GB; `df -h ~` still shows 20 GB or more free.
+      *(Qualified: the 0.6 GB budget was met at 346 MB. The 20 GB free-space bar was NOT met at
+      Sprint 1 time, when machine-wide pressure left 12 to 13 GB free; `data/` itself was only
+      ~7.5 GB. Re-verified 2026-10-11 at 70 GB free. See the Sprint 1 caveat in `PROGRESS.md`.)*
+- [x] Extraction is idempotent; a second run skips completed files in under 5 s.
+- [x] Normalisation assertion test passes: features come from `preprocess_input`-scaled input, verified by comparing against a hand-computed single-clip forward pass.
+- [x] `build_model(cfg)` compiles for both `lstm_head` and `scratch`; summaries saved to `artifacts/model_summary_{arch}.txt`.
+- [x] Overfit test: the head reaches 0.95 or better train accuracy on a 32 clip subset within 50 epochs.
+- [x] Label alignment test: a batch's labels match `clips.parquet` for those exact `clip_id`s.
+- [x] Production run: head trained on RWF+RLVS train features, early stopped on `val_auc`, **`val_auc > 0.80`**. If unmet, record the real number and stop; do not proceed to Sprint 3.
+- [x] Comparison run: scratch CNN-LSTM, 12 epochs, through the live augmented Phase 3 pipeline. Its `val_auc` is recorded for the report whatever it is.
+- [x] MLflow has both runs with params, per-epoch metrics, and model artefacts.
+- [x] TensorBoard shows loss, accuracy, and weight histograms.
+- [x] `pytest -m "phase0 or phase1 or phase2 or phase3 or sprint1"` green.
 
 **Exit Gate:** `make verify SPRINT=1`
 
@@ -155,15 +158,15 @@ commit straight to `main` with the same message rules, and record that you did.*
   omitting it silently.
 
 **Definition of Done**
-- [ ] Metrics agree with `sklearn` to 1e-9 on synthetic data.
-- [ ] `eval_*.json` carries every metric plus bootstrap CIs for every split evaluated.
-- [ ] Cross-dataset matrix covers 1 train set x 3 test sets minimum, rendered as a table.
-- [ ] Threshold sweep figure exists; selected threshold persisted to `configs/infer.yaml`; a test asserts it was selected on validation, not test.
-- [ ] Four figures render and are referenced from `docs/RESULTS.md`.
-- [ ] `docs/RESULTS.md` regenerates with an empty `git diff`.
-- [ ] Every number in `docs/RESULTS.md` traces to a key in a committed `eval_*.json`.
-- [ ] Limitations section names the dropped frame-level AUC and the AIRTLab synthetic-data caveat.
-- [ ] `pytest -m "... or sprint2"` green.
+- [x] Metrics agree with `sklearn` to 1e-9 on synthetic data.
+- [x] `eval_*.json` carries every metric plus bootstrap CIs for every split evaluated.
+- [x] Cross-dataset matrix covers 1 train set x 3 test sets minimum, rendered as a table.
+- [x] Threshold sweep figure exists; selected threshold persisted to `configs/infer.yaml`; a test asserts it was selected on validation, not test.
+- [x] Four figures render and are referenced from `docs/RESULTS.md`.
+- [x] `docs/RESULTS.md` regenerates with an empty `git diff`.
+- [x] Every number in `docs/RESULTS.md` traces to a key in a committed `eval_*.json`.
+- [x] Limitations section names the dropped frame-level AUC and the AIRTLab synthetic-data caveat.
+- [x] `pytest -m "... or sprint2"` green.
 
 **Exit Gate:** `make verify SPRINT=2`
 
@@ -186,15 +189,15 @@ commit straight to `main` with the same message rules, and record that you did.*
 Objective: maximise `val_auc`, one objective only.
 
 **Definition of Done**
-- [ ] 30 trials complete; measured wall time recorded in ADR-004.
-- [ ] At least one trial state is `PRUNED`.
-- [ ] `study.db` resumes: interrupt, re-run with `--resume`, trial count continues.
-- [ ] `configs/model.best.yaml` written programmatically; loading it reproduces the best trial's architecture.
-- [ ] Both Optuna figures render; importance plot interpreted in one paragraph in ADR-004.
-- [ ] Winner retrained on train+val, test metrics regenerated through Sprint 2's harness, **test touched once**.
-- [ ] If tuning did not beat the baseline, the baseline ships and that is reported. No cherry-picking.
-- [ ] `docs/RESULTS.md` regenerated with the tuned row beside the baseline.
-- [ ] `pytest -m "... or sprint3"` green.
+- [x] 30 trials complete; measured wall time recorded in ADR-004.
+- [x] At least one trial state is `PRUNED`.
+- [x] `study.db` resumes: interrupt, re-run with `--resume`, trial count continues.
+- [x] `configs/model.best.yaml` written programmatically; loading it reproduces the best trial's architecture.
+- [x] Both Optuna figures render; importance plot interpreted in one paragraph in ADR-004.
+- [x] Winner retrained on train+val, test metrics regenerated through Sprint 2's harness, **test touched once**.
+- [x] If tuning did not beat the baseline, the baseline ships and that is reported. No cherry-picking.
+- [x] `docs/RESULTS.md` regenerated with the tuned row beside the baseline.
+- [x] `pytest -m "... or sprint3"` green.
 
 **Exit Gate:** `make verify SPRINT=3`
 
@@ -227,15 +230,17 @@ Objective: maximise `val_auc`, one objective only.
   priority, never its existence.
 
 **Definition of Done**
-- [ ] 5-fold grouped CV on AIRTLab reports mean +/- std for accuracy, F1, ROC-AUC.
-- [ ] Forgetting check: RWF-2000 val AUC before and after fine-tuning, both in `RESULTS.md`.
-- [ ] A recorded decision in ADR-005 about which checkpoint ships.
-- [ ] YOLO person detection runs on cached clips; detections/frame sane on a hand-checked 20 clip sample.
-- [ ] Tracking gives stable IDs: a single-walker clip yields one dominant track, not 16.
-- [ ] **Fail-safe test passes:** `p_violence = 0.99` with the gender module forced to "no women detected" still raises an alert.
-- [ ] Graceful degradation: a missing YOLO or CLIP weight logs a warning and falls back to violence-only alerts without crashing.
-- [ ] `docs/ETHICS.md` written, naming the zero-shot limitation and the measured or explicitly unmeasured accuracy.
-- [ ] `pytest -m "... or sprint4"` green.
+- [x] 5-fold grouped CV on AIRTLab reports mean +/- std for accuracy, F1, ROC-AUC.
+- [x] Forgetting check: RWF-2000 val AUC before and after fine-tuning, both in `RESULTS.md`.
+- [x] A recorded decision in ADR-005 about which checkpoint ships.
+- [x] YOLO person detection runs on cached clips; detections/frame sane on a hand-checked 20 clip sample.
+- [x] Tracking gives stable IDs: a single-walker clip yields one dominant track, not 16.
+      *(Qualified: covered by a synthetic unit test, `test_summarize_tracks_sane_on_single_walker`,
+      not by real data. AIRTLab contains no true single-walker clip, its scenes are all 2 actor.)*
+- [x] **Fail-safe test passes:** `p_violence = 0.99` with the gender module forced to "no women detected" still raises an alert.
+- [x] Graceful degradation: a missing YOLO or CLIP weight logs a warning and falls back to violence-only alerts without crashing.
+- [x] `docs/ETHICS.md` written, naming the zero-shot limitation and the measured or explicitly unmeasured accuracy.
+- [x] `pytest -m "... or sprint4"` green.
 
 **Exit Gate:** `make verify SPRINT=4`
 
@@ -262,18 +267,18 @@ Objective: maximise `val_auc`, one objective only.
 5. Tailwind loads from `unpkg.com`. Vendor it into `static/`.
 
 **Definition of Done**
-- [ ] ONNX export succeeds; loads in `onnxruntime`; max abs diff against Keras under 1e-4 over 50 or more real clips, written to `onnx_parity.json`.
-- [ ] ONNX-path ROC-AUC matches the Keras path within 0.005.
-- [ ] Latency p50/p95/p99 per window recorded in `latency.json` with the implied sustainable FPS.
-- [ ] Hysteresis test: a score series oscillating around the threshold produces **one** alert, not many.
-- [ ] Sidecar JSON complete; the engine refuses to run if its normalisation spec disagrees with the active config.
-- [ ] `GET /` 200s; `GET /healthz` returns model version and git SHA.
-- [ ] `POST /api/analyse` with `test/sample_video.avi` returns a schema-valid body with `clip_score` in [0,1].
-- [ ] One 4xx test each for: no file, wrong extension, oversized, non-decodable.
-- [ ] Uploaded files removed from disk after analysis, asserted in a test.
-- [ ] Result page renders verdict and score, asserted by matching response HTML.
-- [ ] `grep -r "from app" .` returns nothing; no external CDN needed to render.
-- [ ] `pytest -m "... or sprint5"` green.
+- [x] ONNX export succeeds; loads in `onnxruntime`; max abs diff against Keras under 1e-4 over 50 or more real clips, written to `onnx_parity.json`.
+- [x] ONNX-path ROC-AUC matches the Keras path within 0.005.
+- [x] Latency p50/p95/p99 per window recorded in `latency.json` with the implied sustainable FPS.
+- [x] Hysteresis test: a score series oscillating around the threshold produces **one** alert, not many.
+- [x] Sidecar JSON complete; the engine refuses to run if its normalisation spec disagrees with the active config.
+- [x] `GET /` 200s; `GET /healthz` returns model version and git SHA.
+- [x] `POST /api/analyse` with `test/sample_video.avi` returns a schema-valid body with `clip_score` in [0,1].
+- [x] One 4xx test each for: no file, wrong extension, oversized, non-decodable.
+- [x] Uploaded files removed from disk after analysis, asserted in a test.
+- [x] Result page renders verdict and score, asserted by matching response HTML.
+- [x] `grep -r "from app" .` returns nothing; no external CDN needed to render.
+- [x] `pytest -m "... or sprint5"` green.
 
 **Exit Gate:** `make verify SPRINT=5`
 
@@ -313,15 +318,15 @@ maps to, and closes with the honest limitations of what it just showed.
 - `docs/PRESENTATION_GUIDE.md` — a walkthrough order for presenting the six notebooks, what to say per notebook, the three strongest results, and the three limitations to volunteer before being asked
 
 **Definition of Done**
-- [ ] All six notebooks execute top to bottom from a clean kernel with **outputs saved**, via `jupyter nbconvert --execute --inplace`. A notebook with stale or missing outputs is not presentable.
-- [ ] No notebook contains a copy-pasted reimplementation of package code.
-- [ ] No notebook takes more than 5 minutes to execute, so it can be re-run live.
-- [ ] Every number displayed in a notebook comes from a committed artefact or a live call, never a literal.
-- [ ] `README.md`'s results table matches `docs/RESULTS.md` exactly; both generated.
-- [ ] Model card covers the AIRTLab synthetic-data limitation and the zero-shot gender module's weakness.
-- [ ] Every row of `BUILD_PLAN.md` §2's requirements table is marked delivered, scaled down, or cut, with a pointer to where it is covered or why it is not. Recorded in `PROGRESS.md`.
-- [ ] `docs/PRESENTATION_GUIDE.md` written.
-- [ ] `pytest` all markers green.
+- [x] All six notebooks execute top to bottom from a clean kernel with **outputs saved**, via `jupyter nbconvert --execute --inplace`. A notebook with stale or missing outputs is not presentable.
+- [x] No notebook contains a copy-pasted reimplementation of package code.
+- [x] No notebook takes more than 5 minutes to execute, so it can be re-run live.
+- [x] Every number displayed in a notebook comes from a committed artefact or a live call, never a literal.
+- [x] `README.md`'s results table matches `docs/RESULTS.md` exactly; both generated.
+- [x] Model card covers the AIRTLab synthetic-data limitation and the zero-shot gender module's weakness.
+- [x] Every row of `BUILD_PLAN.md` §2's requirements table is marked delivered, scaled down, or cut, with a pointer to where it is covered or why it is not. Recorded in `PROGRESS.md`.
+- [x] `docs/PRESENTATION_GUIDE.md` written.
+- [x] `pytest` all markers green.
 
 **Exit Gate:** `make verify SPRINT=6 && make verify-all`
 

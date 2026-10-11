@@ -6,7 +6,11 @@
 A phase is `DONE` **only** when its Exit Gate command has been run and exited 0, and the evidence
 block below is filled in with real output. Not "I think it works".
 
-Last updated: 2026-10-10 · by: sprint-6 session · commit: `0c68d87`
+Last updated: 2026-10-11 · by: completion-verification session · commit: `a8b09e7`
+
+**All six sprints are `DONE` and independently re-verified on 2026-10-11.** See
+"Final verification pass" below. `docs/SPRINT_PLAN.md`'s 60 DoD boxes are ticked, with the two
+that need qualification footnoted inline there rather than silently ticked.
 
 ---
 
@@ -397,7 +401,9 @@ hand-computed single frame matches `backbone(preprocess_input(frame))` to `atol=
 confirmed to diverge from the un-normalised `[0,255]` forward pass (not a vacuous comparison) —
 passes.
 
-DoD checklist: 11/11 met, with one caveat below.
+DoD checklist: 12/12 met, with one caveat below (the free-disk half of the size box; see the
+first note under Surprises). `docs/SPRINT_PLAN.md`'s boxes are ticked to match, with that
+qualification recorded inline there.
 Deviations from plan: Sprint 1's augmentation note option (b) was taken — the production head
 trains on clean (eval-transform) features only; the `scratch` arm exercises the live augmented
 pipeline end to end. Recorded in `docs/decisions/ADR-003-architecture.md`, as instructed. MLflow
@@ -645,7 +651,7 @@ degradation (missing/failing YOLO or CLIP) both covered by
 `tests/test_sprint4_attribution.py`, including the DoD's exact scenario
 (`p_violence=0.99`, gender forced to "no women detected", alert still fires).
 
-DoD checklist: 8/8 met (5-fold CV with mean/std; forgetting check in RESULTS.md; ADR-005
+DoD checklist: 9/9 met (5-fold CV with mean/std; forgetting check in RESULTS.md; ADR-005
 shipping decision recorded; YOLO runs on cached clips with a hand-checked 20-clip sample at
 `artifacts/reports/attribution_sample.json`; tracking sane, see note above; fail-safe test
 passes; graceful degradation tested; docs/ETHICS.md written; cumulative gate green).
@@ -932,6 +938,55 @@ Surprises / notes for the next session:
 | 004 | HPO budget and search space | accepted (Sprint 3) |
 | 005 | Fine-tuning + checkpoint selection | accepted (Sprint 4) |
 | 006 | Deployment target: bundled ONNX in ONNX Runtime, served by Flask | accepted (Sprint 5) |
+
+---
+
+## Final verification pass
+
+Run 2026-10-11, after Sprint 6, re-checking the whole build from scratch rather than trusting the
+sprint board. Nothing was rebuilt; this is verification only.
+
+```
+conda run -n safestreets ruff check .        -> All checks passed!
+conda run -n safestreets pytest -q           -> 143 passed in 241.42s (0:04:01)
+```
+
+All six notebooks re-executed from a cold kernel into a scratch directory (not `--inplace`, so the
+committed outputs were left untouched):
+
+```
+PASS 01_data_and_preprocessing.ipynb    PASS 04_evaluation.ipynb
+PASS 02_augmentation.ipynb              PASS 05_hpo_and_finetune.ipynb
+PASS 03_model_and_training.ipynb        PASS 06_inference_and_demo.ipynb
+exit code 0
+```
+
+`docs/RESULTS.md` regenerated via `safestreets.evaluation.report.generate()`: empty `git diff`, so
+no committed artefact has drifted since Sprint 2.
+
+Flask app smoke test through the test client, serving the fine-tuned ONNX model:
+
+```
+GET /        -> 200, 1835 bytes
+GET /healthz -> 200 {"git_sha":"d8b8335...","model_version":"finetuned_airtlab-73ebf22e032d",
+                     "status":"ok","threshold":0.2}
+```
+
+Commit hygiene over `14a36fa..HEAD`: no em or en dashes, no `Co-Authored-By`, no `Claude-Session`,
+no "generated with" line; author and committer are `kanadb <kanadb004@gmail.com>` on every commit.
+
+Disk at verification time: **70 GB free**, which clears the Sprint 1 DoD's 20 GB bar that was
+failing at 12 to 13 GB during Sprint 1. `data/features` 339 MB, inside its 0.6 GB budget.
+
+**Defect found and fixed in this pass:** `.gitignore` ignored `artifacts/` wholesale, so nothing
+under it had ever been committed. Two consequences, both real: the README's
+`![Architecture](artifacts/figures/architecture.png)` was a broken image on GitHub, and Sprint 2's
+DoD item "every number in `docs/RESULTS.md` traces to a key in a committed `eval_*.json`" was
+false as literally worded, since those JSONs were untracked. Fixed by narrowing the ignore to the
+large regenerable binaries only (`artifacts/checkpoints/`, `artifacts/onnx/`, `artifacts/weights/`)
+and committing the evidence files: 16 report JSONs, 9 figures, both model summaries, and
+`optuna/study.db`, about 4 MB in total. `README.md` gained a "What is committed, and what is
+regenerated" section so the omitted binaries are explicit rather than a surprise on clone.
 
 ---
 
