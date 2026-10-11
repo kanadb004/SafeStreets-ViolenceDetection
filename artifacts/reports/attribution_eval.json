@@ -1,0 +1,3287 @@
+{
+  "dataset": "airtlab",
+  "gender_classifier_available": true,
+  "n_clips": 48,
+  "person_detector_available": true,
+  "results": [
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 3,
+        "p_violence": 0.9895564913749695,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam1_106",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.3228953778743744,
+            "woman": 0.6771047115325928
+          },
+          "score": 0.6771047115325928
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.05088045448064804,
+            "woman": 0.9491195678710938
+          },
+          "score": 0.9491195678710938
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.4448629319667816,
+            "woman": 0.5551370978355408
+          },
+          "score": 0.5551370978355408
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 37,
+          "2": 33,
+          "4": 24
+        },
+        "n_detections": 94,
+        "n_tracks": 3
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "man",
+          "woman"
+        ],
+        "n_people": 3,
+        "p_violence": 0.9873129725456238,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam1_113",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.0103522390127182,
+            "woman": 0.9896478056907654
+          },
+          "score": 0.9896478056907654
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.7356809377670288,
+            "woman": 0.2643190324306488
+          },
+          "score": 0.7356809377670288
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.11147090792655945,
+            "woman": 0.8885290622711182
+          },
+          "score": 0.8885290622711182
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 44,
+          "2": 48,
+          "3": 44
+        },
+        "n_detections": 136,
+        "n_tracks": 3
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "man",
+          "man",
+          "woman",
+          "woman",
+          "woman",
+          "man"
+        ],
+        "n_people": 7,
+        "p_violence": 0.9944196343421936,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam1_12",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.16689062118530273,
+            "woman": 0.8331093192100525
+          },
+          "score": 0.8331093192100525
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9172850251197815,
+            "woman": 0.0827149972319603
+          },
+          "score": 0.9172850251197815
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9116308093070984,
+            "woman": 0.08836919069290161
+          },
+          "score": 0.9116308093070984
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.03336228057742119,
+            "woman": 0.9666377305984497
+          },
+          "score": 0.9666377305984497
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.01493189949542284,
+            "woman": 0.9850680232048035
+          },
+          "score": 0.9850680232048035
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.07675324380397797,
+            "woman": 0.9232467412948608
+          },
+          "score": 0.9232467412948608
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.8302650451660156,
+            "woman": 0.1697348803281784
+          },
+          "score": 0.8302650451660156
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 42,
+          "2": 38,
+          "3": 33,
+          "4": 42,
+          "5": 39,
+          "6": 1,
+          "10": 1
+        },
+        "n_detections": 196,
+        "n_tracks": 7
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "man",
+          "woman",
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 5,
+        "p_violence": 0.9929962754249573,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam1_13",
+      "gender_results": [
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.5879408121109009,
+            "woman": 0.4120592474937439
+          },
+          "score": 0.5879408121109009
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.2713173031806946,
+            "woman": 0.7286826968193054
+          },
+          "score": 0.7286826968193054
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.07829013466835022,
+            "woman": 0.9217098951339722
+          },
+          "score": 0.9217098951339722
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.045194704085588455,
+            "woman": 0.954805314540863
+          },
+          "score": 0.954805314540863
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.009144161827862263,
+            "woman": 0.9908558130264282
+          },
+          "score": 0.9908558130264282
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 44,
+          "2": 44,
+          "3": 13,
+          "4": 31,
+          "8": 2
+        },
+        "n_detections": 134,
+        "n_tracks": 5
+      }
+    },
+    {
+      "alert": {
+        "alert": false,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "man",
+          "man"
+        ],
+        "n_people": 3,
+        "p_violence": 0.06744185835123062,
+        "priority": "standard",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam1_2",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.04501430317759514,
+            "woman": 0.9549857378005981
+          },
+          "score": 0.9549857378005981
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.8569779396057129,
+            "woman": 0.14302211999893188
+          },
+          "score": 0.8569779396057129
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.5495362877845764,
+            "woman": 0.45046374201774597
+          },
+          "score": 0.5495362877845764
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 36,
+          "2": 39,
+          "3": 2
+        },
+        "n_detections": 77,
+        "n_tracks": 3
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "man",
+          "woman"
+        ],
+        "n_people": 4,
+        "p_violence": 0.9968259334564209,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam1_25",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.04356444254517555,
+            "woman": 0.95643550157547
+          },
+          "score": 0.95643550157547
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.031345490366220474,
+            "woman": 0.9686545133590698
+          },
+          "score": 0.9686545133590698
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.8292661309242249,
+            "woman": 0.17073391377925873
+          },
+          "score": 0.8292661309242249
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.45129770040512085,
+            "woman": 0.5487022995948792
+          },
+          "score": 0.5487022995948792
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 22,
+          "2": 22,
+          "3": 22,
+          "4": 8
+        },
+        "n_detections": 74,
+        "n_tracks": 4
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "woman",
+          "woman",
+          "woman",
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 8,
+        "p_violence": 0.9981673955917358,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam1_26",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.38008859753608704,
+            "woman": 0.6199113130569458
+          },
+          "score": 0.6199113130569458
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.26498010754585266,
+            "woman": 0.735019862651825
+          },
+          "score": 0.735019862651825
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.12470913678407669,
+            "woman": 0.8752908706665039
+          },
+          "score": 0.8752908706665039
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.014218168333172798,
+            "woman": 0.9857818484306335
+          },
+          "score": 0.9857818484306335
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.4098065197467804,
+            "woman": 0.5901934504508972
+          },
+          "score": 0.5901934504508972
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.27821770310401917,
+            "woman": 0.7217822074890137
+          },
+          "score": 0.7217822074890137
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.22813838720321655,
+            "woman": 0.7718616724014282
+          },
+          "score": 0.7718616724014282
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.05674821510910988,
+            "woman": 0.9432517886161804
+          },
+          "score": 0.9432517886161804
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 18,
+          "2": 31,
+          "3": 39,
+          "4": 16,
+          "7": 21,
+          "8": 9,
+          "9": 5,
+          "12": 4
+        },
+        "n_detections": 143,
+        "n_tracks": 8
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "man",
+          "man",
+          "woman",
+          "man"
+        ],
+        "n_people": 6,
+        "p_violence": 0.9881268739700317,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam1_3",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.008117932826280594,
+            "woman": 0.9918820261955261
+          },
+          "score": 0.9918820261955261
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.0051319412887096405,
+            "woman": 0.9948680400848389
+          },
+          "score": 0.9948680400848389
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9633952379226685,
+            "woman": 0.03660479187965393
+          },
+          "score": 0.9633952379226685
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9723451137542725,
+            "woman": 0.027654899284243584
+          },
+          "score": 0.9723451137542725
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.2943401634693146,
+            "woman": 0.7056598663330078
+          },
+          "score": 0.7056598663330078
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.8737971186637878,
+            "woman": 0.12620286643505096
+          },
+          "score": 0.8737971186637878
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 37,
+          "2": 37,
+          "3": 37,
+          "4": 10,
+          "5": 3,
+          "6": 20
+        },
+        "n_detections": 144,
+        "n_tracks": 6
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "woman",
+          "man",
+          "woman",
+          "woman",
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 9,
+        "p_violence": 0.887472927570343,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam1_37",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.046790674328804016,
+            "woman": 0.9532093405723572
+          },
+          "score": 0.9532093405723572
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.30606016516685486,
+            "woman": 0.6939398050308228
+          },
+          "score": 0.6939398050308228
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.3120841085910797,
+            "woman": 0.6879158616065979
+          },
+          "score": 0.6879158616065979
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.7624198794364929,
+            "woman": 0.2375800758600235
+          },
+          "score": 0.7624198794364929
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.18388712406158447,
+            "woman": 0.8161128759384155
+          },
+          "score": 0.8161128759384155
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.2187795490026474,
+            "woman": 0.7812204957008362
+          },
+          "score": 0.7812204957008362
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.40623751282691956,
+            "woman": 0.5937624573707581
+          },
+          "score": 0.5937624573707581
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.11725470423698425,
+            "woman": 0.8827453255653381
+          },
+          "score": 0.8827453255653381
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.23818209767341614,
+            "woman": 0.7618178725242615
+          },
+          "score": 0.7618178725242615
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 15,
+          "2": 88,
+          "3": 72,
+          "4": 3,
+          "6": 1,
+          "7": 2,
+          "8": 1,
+          "10": 23,
+          "11": 7
+        },
+        "n_detections": 212,
+        "n_tracks": 9
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "man",
+          "woman",
+          "woman",
+          "man",
+          "woman",
+          "man",
+          "man"
+        ],
+        "n_people": 7,
+        "p_violence": 0.985153317451477,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam1_54",
+      "gender_results": [
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9330832958221436,
+            "woman": 0.06691668927669525
+          },
+          "score": 0.9330832958221436
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.04660887271165848,
+            "woman": 0.9533910751342773
+          },
+          "score": 0.9533910751342773
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.028422808274626732,
+            "woman": 0.9715771675109863
+          },
+          "score": 0.9715771675109863
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.7164961099624634,
+            "woman": 0.283503919839859
+          },
+          "score": 0.7164961099624634
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.023487305268645287,
+            "woman": 0.9765126705169678
+          },
+          "score": 0.9765126705169678
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9265152812004089,
+            "woman": 0.07348470389842987
+          },
+          "score": 0.9265152812004089
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.866537868976593,
+            "woman": 0.13346220552921295
+          },
+          "score": 0.866537868976593
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 53,
+          "2": 74,
+          "3": 77,
+          "5": 2,
+          "8": 9,
+          "10": 12,
+          "12": 1
+        },
+        "n_detections": 228,
+        "n_tracks": 7
+      }
+    },
+    {
+      "alert": {
+        "alert": false,
+        "attribution_available": true,
+        "genders_detected": [
+          "man",
+          "woman",
+          "woman"
+        ],
+        "n_people": 3,
+        "p_violence": 0.1304352581501007,
+        "priority": "standard",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam1_61",
+      "gender_results": [
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9285114407539368,
+            "woman": 0.07148858159780502
+          },
+          "score": 0.9285114407539368
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.05644107982516289,
+            "woman": 0.943558931350708
+          },
+          "score": 0.943558931350708
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.1258627325296402,
+            "woman": 0.874137282371521
+          },
+          "score": 0.874137282371521
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 42,
+          "2": 15,
+          "3": 18
+        },
+        "n_detections": 75,
+        "n_tracks": 3
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "man",
+          "woman"
+        ],
+        "n_people": 4,
+        "p_violence": 0.6952126026153564,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam1_62",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.059221941977739334,
+            "woman": 0.9407781362533569
+          },
+          "score": 0.9407781362533569
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.18030250072479248,
+            "woman": 0.8196974992752075
+          },
+          "score": 0.8196974992752075
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.8916878700256348,
+            "woman": 0.10831212997436523
+          },
+          "score": 0.8916878700256348
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.034764088690280914,
+            "woman": 0.9652359485626221
+          },
+          "score": 0.9652359485626221
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 39,
+          "2": 18,
+          "3": 34,
+          "8": 1
+        },
+        "n_detections": 92,
+        "n_tracks": 4
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "man",
+          "woman",
+          "woman"
+        ],
+        "n_people": 4,
+        "p_violence": 0.9906086921691895,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam1_70",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.014637359417974949,
+            "woman": 0.9853626489639282
+          },
+          "score": 0.9853626489639282
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9135830402374268,
+            "woman": 0.08641694486141205
+          },
+          "score": 0.9135830402374268
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.049257565289735794,
+            "woman": 0.9507424831390381
+          },
+          "score": 0.9507424831390381
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.01857321336865425,
+            "woman": 0.9814267754554749
+          },
+          "score": 0.9814267754554749
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 21,
+          "2": 21,
+          "3": 21,
+          "4": 17
+        },
+        "n_detections": 80,
+        "n_tracks": 4
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "man",
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 6,
+        "p_violence": 0.43085822463035583,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam1_73",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.09172555059194565,
+            "woman": 0.9082744121551514
+          },
+          "score": 0.9082744121551514
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.017032377421855927,
+            "woman": 0.9829675555229187
+          },
+          "score": 0.9829675555229187
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.5423368811607361,
+            "woman": 0.4576631188392639
+          },
+          "score": 0.5423368811607361
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.23489408195018768,
+            "woman": 0.7651059627532959
+          },
+          "score": 0.7651059627532959
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.3541699945926666,
+            "woman": 0.6458300948143005
+          },
+          "score": 0.6458300948143005
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.014462742954492569,
+            "woman": 0.9855372309684753
+          },
+          "score": 0.9855372309684753
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 31,
+          "2": 36,
+          "3": 36,
+          "4": 5,
+          "5": 1,
+          "6": 27
+        },
+        "n_detections": 136,
+        "n_tracks": 6
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "man",
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 4,
+        "p_violence": 0.9946306943893433,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam1_93",
+      "gender_results": [
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.8673923015594482,
+            "woman": 0.13260777294635773
+          },
+          "score": 0.8673923015594482
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.009837795980274677,
+            "woman": 0.9901622533798218
+          },
+          "score": 0.9901622533798218
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.01818680576980114,
+            "woman": 0.9818131923675537
+          },
+          "score": 0.9818131923675537
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.0646476000547409,
+            "woman": 0.9353523850440979
+          },
+          "score": 0.9353523850440979
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 24,
+          "2": 24,
+          "3": 24,
+          "4": 24
+        },
+        "n_detections": 96,
+        "n_tracks": 4
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 4,
+        "p_violence": 0.9478647708892822,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam2_106",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.00951601192355156,
+            "woman": 0.9904839992523193
+          },
+          "score": 0.9904839992523193
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.06525389850139618,
+            "woman": 0.9347461462020874
+          },
+          "score": 0.9347461462020874
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.05428032949566841,
+            "woman": 0.9457196593284607
+          },
+          "score": 0.9457196593284607
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.024252207949757576,
+            "woman": 0.9757477641105652
+          },
+          "score": 0.9757477641105652
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 32,
+          "2": 37,
+          "3": 37,
+          "4": 3
+        },
+        "n_detections": 109,
+        "n_tracks": 4
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "man",
+          "woman",
+          "woman"
+        ],
+        "n_people": 5,
+        "p_violence": 0.9907754063606262,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam2_113",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.0353626124560833,
+            "woman": 0.9646373391151428
+          },
+          "score": 0.9646373391151428
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.018997861072421074,
+            "woman": 0.9810020923614502
+          },
+          "score": 0.9810020923614502
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.955069899559021,
+            "woman": 0.04493008926510811
+          },
+          "score": 0.955069899559021
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.0324132926762104,
+            "woman": 0.9675866961479187
+          },
+          "score": 0.9675866961479187
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.07896056026220322,
+            "woman": 0.9210394620895386
+          },
+          "score": 0.9210394620895386
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 48,
+          "2": 48,
+          "3": 42,
+          "4": 23,
+          "5": 22
+        },
+        "n_detections": 183,
+        "n_tracks": 5
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "man",
+          "woman",
+          "woman",
+          "woman",
+          "man",
+          "woman",
+          "man"
+        ],
+        "n_people": 7,
+        "p_violence": 0.7452574968338013,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam2_12",
+      "gender_results": [
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.8631051778793335,
+            "woman": 0.13689479231834412
+          },
+          "score": 0.8631051778793335
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.012288759462535381,
+            "woman": 0.9877112507820129
+          },
+          "score": 0.9877112507820129
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.46236538887023926,
+            "woman": 0.537634551525116
+          },
+          "score": 0.537634551525116
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.020351283252239227,
+            "woman": 0.979648768901825
+          },
+          "score": 0.979648768901825
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.8595274686813354,
+            "woman": 0.14047253131866455
+          },
+          "score": 0.8595274686813354
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.010835198685526848,
+            "woman": 0.9891647696495056
+          },
+          "score": 0.9891647696495056
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9113031029701233,
+            "woman": 0.08869687467813492
+          },
+          "score": 0.9113031029701233
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 40,
+          "2": 39,
+          "3": 37,
+          "4": 35,
+          "5": 40,
+          "6": 7,
+          "9": 2
+        },
+        "n_detections": 200,
+        "n_tracks": 7
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "man",
+          "woman",
+          "man",
+          "woman",
+          "man",
+          "man"
+        ],
+        "n_people": 6,
+        "p_violence": 0.4335172474384308,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam2_13",
+      "gender_results": [
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9852509498596191,
+            "woman": 0.014749082736670971
+          },
+          "score": 0.9852509498596191
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.2783057987689972,
+            "woman": 0.7216941714286804
+          },
+          "score": 0.7216941714286804
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.8019921779632568,
+            "woman": 0.19800783693790436
+          },
+          "score": 0.8019921779632568
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.3725360035896301,
+            "woman": 0.6274640560150146
+          },
+          "score": 0.6274640560150146
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9463999271392822,
+            "woman": 0.05360008031129837
+          },
+          "score": 0.9463999271392822
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9477322101593018,
+            "woman": 0.052267786115407944
+          },
+          "score": 0.9477322101593018
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 39,
+          "2": 4,
+          "3": 18,
+          "4": 8,
+          "7": 11,
+          "9": 7
+        },
+        "n_detections": 87,
+        "n_tracks": 6
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "man"
+        ],
+        "n_people": 3,
+        "p_violence": 0.22419151663780212,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam2_2",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.00819265004247427,
+            "woman": 0.9918072819709778
+          },
+          "score": 0.9918072819709778
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.01045564841479063,
+            "woman": 0.9895443320274353
+          },
+          "score": 0.9895443320274353
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.8308440446853638,
+            "woman": 0.16915589570999146
+          },
+          "score": 0.8308440446853638
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 19,
+          "2": 23,
+          "3": 21
+        },
+        "n_detections": 63,
+        "n_tracks": 3
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "man",
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 4,
+        "p_violence": 0.9915380477905273,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam2_25",
+      "gender_results": [
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9582359194755554,
+            "woman": 0.0417640283703804
+          },
+          "score": 0.9582359194755554
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.020273661240935326,
+            "woman": 0.9797263145446777
+          },
+          "score": 0.9797263145446777
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.043202850967645645,
+            "woman": 0.9567971229553223
+          },
+          "score": 0.9567971229553223
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.03215521201491356,
+            "woman": 0.9678447842597961
+          },
+          "score": 0.9678447842597961
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 22,
+          "2": 21,
+          "3": 22,
+          "6": 6
+        },
+        "n_detections": 71,
+        "n_tracks": 4
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "man",
+          "woman",
+          "woman",
+          "man",
+          "woman",
+          "man",
+          "woman"
+        ],
+        "n_people": 7,
+        "p_violence": 0.9958550333976746,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam2_26",
+      "gender_results": [
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.7844781279563904,
+            "woman": 0.2155219465494156
+          },
+          "score": 0.7844781279563904
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.4647383987903595,
+            "woman": 0.5352616906166077
+          },
+          "score": 0.5352616906166077
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.257506787776947,
+            "woman": 0.742493212223053
+          },
+          "score": 0.742493212223053
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.521893322467804,
+            "woman": 0.47810667753219604
+          },
+          "score": 0.521893322467804
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.24155960977077484,
+            "woman": 0.7584403157234192
+          },
+          "score": 0.7584403157234192
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.5524015426635742,
+            "woman": 0.4475984573364258
+          },
+          "score": 0.5524015426635742
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.14812105894088745,
+            "woman": 0.8518789410591125
+          },
+          "score": 0.8518789410591125
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 47,
+          "2": 47,
+          "3": 37,
+          "6": 8,
+          "7": 2,
+          "8": 13,
+          "10": 2
+        },
+        "n_detections": 156,
+        "n_tracks": 7
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "man",
+          "woman",
+          "man",
+          "man"
+        ],
+        "n_people": 5,
+        "p_violence": 0.6160972714424133,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam2_3",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.016283966600894928,
+            "woman": 0.9837160110473633
+          },
+          "score": 0.9837160110473633
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.5232419371604919,
+            "woman": 0.47675809264183044
+          },
+          "score": 0.5232419371604919
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.03717878460884094,
+            "woman": 0.9628212451934814
+          },
+          "score": 0.9628212451934814
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9022247791290283,
+            "woman": 0.09777519106864929
+          },
+          "score": 0.9022247791290283
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.7605617046356201,
+            "woman": 0.2394382357597351
+          },
+          "score": 0.7605617046356201
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 37,
+          "2": 37,
+          "3": 37,
+          "4": 7,
+          "6": 22
+        },
+        "n_detections": 140,
+        "n_tracks": 5
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "man",
+          "man",
+          "man",
+          "man",
+          "woman",
+          "woman",
+          "man"
+        ],
+        "n_people": 8,
+        "p_violence": 0.8878334164619446,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam2_37",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.3975934684276581,
+            "woman": 0.6024065613746643
+          },
+          "score": 0.6024065613746643
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.6803267598152161,
+            "woman": 0.31967324018478394
+          },
+          "score": 0.6803267598152161
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.8746046423912048,
+            "woman": 0.1253952980041504
+          },
+          "score": 0.8746046423912048
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.5348787307739258,
+            "woman": 0.4651212692260742
+          },
+          "score": 0.5348787307739258
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.5725813508033752,
+            "woman": 0.42741867899894714
+          },
+          "score": 0.5725813508033752
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.0833277553319931,
+            "woman": 0.9166722297668457
+          },
+          "score": 0.9166722297668457
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.32441556453704834,
+            "woman": 0.6755844950675964
+          },
+          "score": 0.6755844950675964
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.7083099484443665,
+            "woman": 0.2916901111602783
+          },
+          "score": 0.7083099484443665
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 29,
+          "2": 107,
+          "3": 9,
+          "6": 3,
+          "8": 1,
+          "9": 35,
+          "12": 29,
+          "18": 22
+        },
+        "n_detections": 235,
+        "n_tracks": 8
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "man",
+          "man",
+          "woman",
+          "man",
+          "man",
+          "woman"
+        ],
+        "n_people": 8,
+        "p_violence": 0.6445198059082031,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam2_54",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.07551206648349762,
+            "woman": 0.9244880080223083
+          },
+          "score": 0.9244880080223083
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.008715339004993439,
+            "woman": 0.9912847280502319
+          },
+          "score": 0.9912847280502319
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.5605984926223755,
+            "woman": 0.4394015073776245
+          },
+          "score": 0.5605984926223755
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9135050177574158,
+            "woman": 0.08649498224258423
+          },
+          "score": 0.9135050177574158
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.009698047302663326,
+            "woman": 0.9903019070625305
+          },
+          "score": 0.9903019070625305
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.7942973971366882,
+            "woman": 0.20570260286331177
+          },
+          "score": 0.7942973971366882
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.6163149476051331,
+            "woman": 0.38368505239486694
+          },
+          "score": 0.6163149476051331
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.02681582048535347,
+            "woman": 0.9731841683387756
+          },
+          "score": 0.9731841683387756
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 55,
+          "2": 65,
+          "3": 62,
+          "4": 56,
+          "7": 5,
+          "9": 14,
+          "10": 13,
+          "11": 7
+        },
+        "n_detections": 277,
+        "n_tracks": 8
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "man",
+          "woman"
+        ],
+        "n_people": 3,
+        "p_violence": 0.6176736354827881,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam2_61",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.03916160389780998,
+            "woman": 0.9608383774757385
+          },
+          "score": 0.9608383774757385
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9503461122512817,
+            "woman": 0.04965396970510483
+          },
+          "score": 0.9503461122512817
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.030736489221453667,
+            "woman": 0.96926349401474
+          },
+          "score": 0.96926349401474
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 42,
+          "2": 38,
+          "3": 24
+        },
+        "n_detections": 104,
+        "n_tracks": 3
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "man",
+          "man",
+          "woman",
+          "man"
+        ],
+        "n_people": 4,
+        "p_violence": 0.997965931892395,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam2_62",
+      "gender_results": [
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9413310885429382,
+            "woman": 0.05866891145706177
+          },
+          "score": 0.9413310885429382
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.516200602054596,
+            "woman": 0.48379942774772644
+          },
+          "score": 0.516200602054596
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.00780669366940856,
+            "woman": 0.9921932816505432
+          },
+          "score": 0.9921932816505432
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.746722400188446,
+            "woman": 0.25327762961387634
+          },
+          "score": 0.746722400188446
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 32,
+          "2": 40,
+          "3": 38,
+          "5": 5
+        },
+        "n_detections": 115,
+        "n_tracks": 4
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "man",
+          "woman",
+          "woman"
+        ],
+        "n_people": 5,
+        "p_violence": 0.995257556438446,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam2_70",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.4603253901004791,
+            "woman": 0.5396746397018433
+          },
+          "score": 0.5396746397018433
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.10212285816669464,
+            "woman": 0.8978772163391113
+          },
+          "score": 0.8978772163391113
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9334599375724792,
+            "woman": 0.06654004007577896
+          },
+          "score": 0.9334599375724792
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.2201324850320816,
+            "woman": 0.7798675894737244
+          },
+          "score": 0.7798675894737244
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.303440660238266,
+            "woman": 0.6965593695640564
+          },
+          "score": 0.6965593695640564
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 21,
+          "2": 21,
+          "3": 21,
+          "4": 8,
+          "6": 10
+        },
+        "n_detections": 81,
+        "n_tracks": 5
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "woman",
+          "man",
+          "man"
+        ],
+        "n_people": 5,
+        "p_violence": 0.5994508862495422,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam2_73",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.01399508211761713,
+            "woman": 0.9860048890113831
+          },
+          "score": 0.9860048890113831
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.0592595711350441,
+            "woman": 0.9407404661178589
+          },
+          "score": 0.9407404661178589
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.012467880733311176,
+            "woman": 0.9875320792198181
+          },
+          "score": 0.9875320792198181
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.647481381893158,
+            "woman": 0.3525186777114868
+          },
+          "score": 0.647481381893158
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.8320557475090027,
+            "woman": 0.16794423758983612
+          },
+          "score": 0.8320557475090027
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 36,
+          "2": 19,
+          "3": 36,
+          "4": 3,
+          "6": 6
+        },
+        "n_detections": 100,
+        "n_tracks": 5
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "man",
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 4,
+        "p_violence": 0.9770146608352661,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_violent_cam2_93",
+      "gender_results": [
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9165636897087097,
+            "woman": 0.08343636244535446
+          },
+          "score": 0.9165636897087097
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.3560621440410614,
+            "woman": 0.6439378261566162
+          },
+          "score": 0.6439378261566162
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.02141772396862507,
+            "woman": 0.9785822629928589
+          },
+          "score": 0.9785822629928589
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.02385084331035614,
+            "woman": 0.9761491417884827
+          },
+          "score": 0.9761491417884827
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 24,
+          "2": 24,
+          "3": 22,
+          "4": 15
+        },
+        "n_detections": 85,
+        "n_tracks": 4
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "woman",
+          "man",
+          "man"
+        ],
+        "n_people": 5,
+        "p_violence": 0.9923949241638184,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam1_12",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.14292719960212708,
+            "woman": 0.8570727109909058
+          },
+          "score": 0.8570727109909058
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.009029986336827278,
+            "woman": 0.9909700155258179
+          },
+          "score": 0.9909700155258179
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.09971565008163452,
+            "woman": 0.9002842903137207
+          },
+          "score": 0.9002842903137207
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9809777140617371,
+            "woman": 0.019022261723876
+          },
+          "score": 0.9809777140617371
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.6152467727661133,
+            "woman": 0.38475319743156433
+          },
+          "score": 0.6152467727661133
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 30,
+          "2": 32,
+          "3": 13,
+          "4": 31,
+          "6": 4
+        },
+        "n_detections": 110,
+        "n_tracks": 5
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "man",
+          "man",
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 6,
+        "p_violence": 0.9957036375999451,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam1_15",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.020231766626238823,
+            "woman": 0.9797682166099548
+          },
+          "score": 0.9797682166099548
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.808254063129425,
+            "woman": 0.19174587726593018
+          },
+          "score": 0.808254063129425
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9840190410614014,
+            "woman": 0.015980904921889305
+          },
+          "score": 0.9840190410614014
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.03908359259366989,
+            "woman": 0.9609163999557495
+          },
+          "score": 0.9609163999557495
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.03408233821392059,
+            "woman": 0.965917706489563
+          },
+          "score": 0.965917706489563
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.021527213975787163,
+            "woman": 0.9784728288650513
+          },
+          "score": 0.9784728288650513
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 83,
+          "2": 92,
+          "3": 92,
+          "4": 84,
+          "5": 13,
+          "11": 3
+        },
+        "n_detections": 367,
+        "n_tracks": 6
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "man",
+          "man",
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 5,
+        "p_violence": 0.9975267052650452,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam1_18",
+      "gender_results": [
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.8171000480651855,
+            "woman": 0.18289992213249207
+          },
+          "score": 0.8171000480651855
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.7801529169082642,
+            "woman": 0.21984709799289703
+          },
+          "score": 0.7801529169082642
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.022319333627820015,
+            "woman": 0.9776806831359863
+          },
+          "score": 0.9776806831359863
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.023267073556780815,
+            "woman": 0.9767329096794128
+          },
+          "score": 0.9767329096794128
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.008844127878546715,
+            "woman": 0.9911558628082275
+          },
+          "score": 0.9911558628082275
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 46,
+          "2": 42,
+          "3": 47,
+          "4": 24,
+          "7": 14
+        },
+        "n_detections": 173,
+        "n_tracks": 5
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "man",
+          "woman",
+          "woman",
+          "man"
+        ],
+        "n_people": 4,
+        "p_violence": 0.9383489489555359,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam1_19",
+      "gender_results": [
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9434314966201782,
+            "woman": 0.056568488478660583
+          },
+          "score": 0.9434314966201782
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.006879726890474558,
+            "woman": 0.9931203126907349
+          },
+          "score": 0.9931203126907349
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.2135760635137558,
+            "woman": 0.786423921585083
+          },
+          "score": 0.786423921585083
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.6844424605369568,
+            "woman": 0.315557599067688
+          },
+          "score": 0.6844424605369568
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 18,
+          "2": 18,
+          "3": 18,
+          "4": 16
+        },
+        "n_detections": 70,
+        "n_tracks": 4
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 4,
+        "p_violence": 0.752021312713623,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam1_38",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.0785723403096199,
+            "woman": 0.9214276075363159
+          },
+          "score": 0.9214276075363159
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.03218436986207962,
+            "woman": 0.967815637588501
+          },
+          "score": 0.967815637588501
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.010953872464597225,
+            "woman": 0.9890461564064026
+          },
+          "score": 0.9890461564064026
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.29263001680374146,
+            "woman": 0.7073699235916138
+          },
+          "score": 0.7073699235916138
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 15,
+          "2": 49,
+          "3": 50,
+          "7": 6
+        },
+        "n_detections": 120,
+        "n_tracks": 4
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 3,
+        "p_violence": 0.5807576179504395,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam1_50",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.12393150478601456,
+            "woman": 0.8760684728622437
+          },
+          "score": 0.8760684728622437
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.055182624608278275,
+            "woman": 0.9448173642158508
+          },
+          "score": 0.9448173642158508
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.03117641992866993,
+            "woman": 0.9688235521316528
+          },
+          "score": 0.9688235521316528
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 47,
+          "2": 47,
+          "3": 25
+        },
+        "n_detections": 119,
+        "n_tracks": 3
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 4,
+        "p_violence": 0.5038301944732666,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam1_57",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.012303167022764683,
+            "woman": 0.9876968264579773
+          },
+          "score": 0.9876968264579773
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.04430349916219711,
+            "woman": 0.9556965231895447
+          },
+          "score": 0.9556965231895447
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.030715469270944595,
+            "woman": 0.9692845344543457
+          },
+          "score": 0.9692845344543457
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.00829689297825098,
+            "woman": 0.9917030930519104
+          },
+          "score": 0.9917030930519104
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 46,
+          "2": 24,
+          "3": 46,
+          "8": 17
+        },
+        "n_detections": 133,
+        "n_tracks": 4
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 4,
+        "p_violence": 0.9877954721450806,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam1_58",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.026491761207580566,
+            "woman": 0.9735082983970642
+          },
+          "score": 0.9735082983970642
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.014777658507227898,
+            "woman": 0.9852223992347717
+          },
+          "score": 0.9852223992347717
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.06984720379114151,
+            "woman": 0.9301527738571167
+          },
+          "score": 0.9301527738571167
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.28715720772743225,
+            "woman": 0.7128428220748901
+          },
+          "score": 0.7128428220748901
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 11,
+          "2": 28,
+          "3": 30,
+          "7": 2
+        },
+        "n_detections": 71,
+        "n_tracks": 4
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "man",
+          "woman"
+        ],
+        "n_people": 3,
+        "p_violence": 0.9878606200218201,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam1_8",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.009217380546033382,
+            "woman": 0.9907826781272888
+          },
+          "score": 0.9907826781272888
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.84257572889328,
+            "woman": 0.15742430090904236
+          },
+          "score": 0.84257572889328
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.0321819931268692,
+            "woman": 0.967818021774292
+          },
+          "score": 0.967818021774292
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 31,
+          "2": 31,
+          "3": 31
+        },
+        "n_detections": 93,
+        "n_tracks": 3
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "man",
+          "man",
+          "woman",
+          "man",
+          "woman"
+        ],
+        "n_people": 7,
+        "p_violence": 0.46037399768829346,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam2_12",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.19678761065006256,
+            "woman": 0.8032124042510986
+          },
+          "score": 0.8032124042510986
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.0752779096364975,
+            "woman": 0.9247220754623413
+          },
+          "score": 0.9247220754623413
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.7856168150901794,
+            "woman": 0.21438318490982056
+          },
+          "score": 0.7856168150901794
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9407433271408081,
+            "woman": 0.05925670266151428
+          },
+          "score": 0.9407433271408081
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.011435991153120995,
+            "woman": 0.9885640144348145
+          },
+          "score": 0.9885640144348145
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.6684449911117554,
+            "woman": 0.33155497908592224
+          },
+          "score": 0.6684449911117554
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.1548377126455307,
+            "woman": 0.8451623320579529
+          },
+          "score": 0.8451623320579529
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 13,
+          "2": 25,
+          "3": 8,
+          "4": 25,
+          "5": 3,
+          "7": 5,
+          "9": 2
+        },
+        "n_detections": 81,
+        "n_tracks": 7
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "man",
+          "man",
+          "woman",
+          "woman",
+          "man"
+        ],
+        "n_people": 5,
+        "p_violence": 0.6894717216491699,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam2_15",
+      "gender_results": [
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.8900083303451538,
+            "woman": 0.10999168455600739
+          },
+          "score": 0.8900083303451538
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9783647656440735,
+            "woman": 0.021635228767991066
+          },
+          "score": 0.9783647656440735
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.0446411594748497,
+            "woman": 0.9553588628768921
+          },
+          "score": 0.9553588628768921
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.05092090368270874,
+            "woman": 0.9490790367126465
+          },
+          "score": 0.9490790367126465
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.7126174569129944,
+            "woman": 0.2873825132846832
+          },
+          "score": 0.7126174569129944
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 92,
+          "2": 89,
+          "3": 63,
+          "4": 91,
+          "9": 1
+        },
+        "n_detections": 336,
+        "n_tracks": 5
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "man",
+          "woman",
+          "woman",
+          "man"
+        ],
+        "n_people": 4,
+        "p_violence": 0.8025903105735779,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam2_18",
+      "gender_results": [
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.8129746317863464,
+            "woman": 0.18702535331249237
+          },
+          "score": 0.8129746317863464
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.16073556244373322,
+            "woman": 0.8392643928527832
+          },
+          "score": 0.8392643928527832
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.021432723850011826,
+            "woman": 0.978567361831665
+          },
+          "score": 0.978567361831665
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.861114501953125,
+            "woman": 0.13888554275035858
+          },
+          "score": 0.861114501953125
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 48,
+          "2": 23,
+          "3": 38,
+          "4": 47
+        },
+        "n_detections": 156,
+        "n_tracks": 4
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "man",
+          "woman",
+          "woman"
+        ],
+        "n_people": 4,
+        "p_violence": 0.9980601668357849,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam2_19",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.14259156584739685,
+            "woman": 0.8574084043502808
+          },
+          "score": 0.8574084043502808
+        },
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.9628454446792603,
+            "woman": 0.037154555320739746
+          },
+          "score": 0.9628454446792603
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.025194669142365456,
+            "woman": 0.9748052954673767
+          },
+          "score": 0.9748052954673767
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.36971235275268555,
+            "woman": 0.6302876472473145
+          },
+          "score": 0.6302876472473145
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 18,
+          "2": 18,
+          "3": 18,
+          "4": 18
+        },
+        "n_detections": 72,
+        "n_tracks": 4
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 3,
+        "p_violence": 0.8268362283706665,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam2_38",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.030694015324115753,
+            "woman": 0.9693060517311096
+          },
+          "score": 0.9693060517311096
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.018179621547460556,
+            "woman": 0.9818204045295715
+          },
+          "score": 0.9818204045295715
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.1767287701368332,
+            "woman": 0.8232712745666504
+          },
+          "score": 0.8232712745666504
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 42,
+          "2": 50,
+          "3": 32
+        },
+        "n_detections": 124,
+        "n_tracks": 3
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 3,
+        "p_violence": 0.9756327867507935,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam2_50",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.14724190533161163,
+            "woman": 0.8527581095695496
+          },
+          "score": 0.8527581095695496
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.012540985830128193,
+            "woman": 0.9874589443206787
+          },
+          "score": 0.9874589443206787
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.05311529338359833,
+            "woman": 0.9468847513198853
+          },
+          "score": 0.9468847513198853
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 47,
+          "2": 47,
+          "3": 47
+        },
+        "n_detections": 141,
+        "n_tracks": 3
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 3,
+        "p_violence": 0.9715868234634399,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam2_57",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.03756682202219963,
+            "woman": 0.9624331593513489
+          },
+          "score": 0.9624331593513489
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.05175599455833435,
+            "woman": 0.9482439756393433
+          },
+          "score": 0.9482439756393433
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.019166626036167145,
+            "woman": 0.9808334112167358
+          },
+          "score": 0.9808334112167358
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 46,
+          "2": 46,
+          "3": 44
+        },
+        "n_detections": 136,
+        "n_tracks": 3
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "woman",
+          "woman",
+          "woman",
+          "woman"
+        ],
+        "n_people": 4,
+        "p_violence": 0.7312434315681458,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam2_58",
+      "gender_results": [
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.1963270604610443,
+            "woman": 0.8036729693412781
+          },
+          "score": 0.8036729693412781
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.03429565206170082,
+            "woman": 0.9657043218612671
+          },
+          "score": 0.9657043218612671
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.010669288225471973,
+            "woman": 0.9893306493759155
+          },
+          "score": 0.9893306493759155
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.29757198691368103,
+            "woman": 0.7024279832839966
+          },
+          "score": 0.7024279832839966
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 12,
+          "2": 36,
+          "3": 36,
+          "5": 8
+        },
+        "n_detections": 92,
+        "n_tracks": 4
+      }
+    },
+    {
+      "alert": {
+        "alert": true,
+        "attribution_available": true,
+        "genders_detected": [
+          "man",
+          "woman"
+        ],
+        "n_people": 2,
+        "p_violence": 0.6507353186607361,
+        "priority": "elevated",
+        "threshold": 0.2
+      },
+      "clip_id": "airtlab_non-violent_cam2_8",
+      "gender_results": [
+        {
+          "label": "man",
+          "probs": {
+            "man": 0.7877813577651978,
+            "woman": 0.21221862733364105
+          },
+          "score": 0.7877813577651978
+        },
+        {
+          "label": "woman",
+          "probs": {
+            "man": 0.014342018403112888,
+            "woman": 0.9856579899787903
+          },
+          "score": 0.9856579899787903
+        }
+      ],
+      "track_summary": {
+        "frames_per_track": {
+          "1": 25,
+          "2": 31
+        },
+        "n_detections": 56,
+        "n_tracks": 2
+      }
+    }
+  ],
+  "split": "test"
+}

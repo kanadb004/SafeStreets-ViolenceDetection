@@ -1,0 +1,54 @@
+{
+  "accuracy": {
+    "ci95": [
+      1.0,
+      1.0
+    ],
+    "value": 1.0
+  },
+  "confusion_matrix": {
+    "fn": 0,
+    "fp": 0,
+    "tn": 1,
+    "tp": 4
+  },
+  "dataset": "ucfcrime",
+  "f1": {
+    "ci95": [
+      1.0,
+      1.0
+    ],
+    "value": 1.0
+  },
+  "n": 5,
+  "pr_auc": {
+    "ci95": [
+      1.0,
+      1.0
+    ],
+    "value": 1.0
+  },
+  "precision": {
+    "ci95": [
+      1.0,
+      1.0
+    ],
+    "value": 1.0
+  },
+  "recall": {
+    "ci95": [
+      1.0,
+      1.0
+    ],
+    "value": 1.0
+  },
+  "roc_auc": {
+    "ci95": [
+      1.0,
+      1.0
+    ],
+    "value": 1.0
+  },
+  "split": "test",
+  "threshold": 0.2
+}

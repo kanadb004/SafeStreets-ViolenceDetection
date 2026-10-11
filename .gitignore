@@ -9,6 +9,11 @@ logs/
 *.egg-info/
 .pytest_cache/
 /data/
-artifacts/
+# Artifacts: the small evidence files are committed so every number in docs/RESULTS.md
+# traces to a file in the repo and the README's figures render on GitHub. The large
+# binaries are not: they are regenerable from scripts/ per docs/REPRODUCE.md.
+artifacts/checkpoints/
+artifacts/onnx/
+artifacts/weights/
 mlruns/
 .ruff_cache/

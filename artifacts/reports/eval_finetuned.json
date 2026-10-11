@@ -1,0 +1,67 @@
+{
+  "cv_summary": {
+    "accuracy": {
+      "mean": 0.8485714285714285,
+      "std": 0.04389226141639202
+    },
+    "f1": {
+      "mean": 0.8862629536295682,
+      "std": 0.033839991921045566
+    },
+    "roc_auc": {
+      "mean": 0.897592353298875,
+      "std": 0.042910831878684455
+    }
+  },
+  "final_checkpoint": "artifacts/checkpoints/finetuned_airtlab_lstm_head.keras",
+  "fold_reports": [
+    {
+      "accuracy": 0.8857142857142857,
+      "f1": 0.9148936170212766,
+      "fold": 0,
+      "n_test": 70,
+      "n_train": 280,
+      "roc_auc": 0.8632246376811594
+    },
+    {
+      "accuracy": 0.8,
+      "f1": 0.851063829787234,
+      "fold": 1,
+      "n_test": 70,
+      "n_train": 280,
+      "roc_auc": 0.8645833333333333
+    },
+    {
+      "accuracy": 0.8285714285714286,
+      "f1": 0.88,
+      "fold": 2,
+      "n_test": 70,
+      "n_train": 280,
+      "roc_auc": 0.8697552447552448
+    },
+    {
+      "accuracy": 0.9142857142857143,
+      "f1": 0.9347826086956522,
+      "fold": 3,
+      "n_test": 70,
+      "n_train": 280,
+      "roc_auc": 0.9737318840579711
+    },
+    {
+      "accuracy": 0.8142857142857143,
+      "f1": 0.8505747126436781,
+      "fold": 4,
+      "n_test": 70,
+      "n_train": 280,
+      "roc_auc": 0.9166666666666667
+    }
+  ],
+  "forgetting_check": {
+    "dataset": "rwf2000",
+    "n": 400,
+    "roc_auc_after": 0.656825,
+    "roc_auc_before": 0.71505,
+    "roc_auc_drop": 0.05822499999999997,
+    "split": "val"
+  }
+}

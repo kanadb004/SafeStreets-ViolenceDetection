@@ -1,0 +1,50 @@
+Model: "scratch_cnn_lstm"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ clips (InputLayer)          [(None, 16, 112, 112, 3   0         
+                             )]                                  
+                                                                 
+ time_distributed (TimeDist  (None, 16, 112, 112, 32   896       
+ ributed)                    )                                   
+                                                                 
+ time_distributed_1 (TimeDi  (None, 16, 112, 112, 32   128       
+ stributed)                  )                                   
+                                                                 
+ time_distributed_2 (TimeDi  (None, 16, 56, 56, 32)    0         
+ stributed)                                                      
+                                                                 
+ time_distributed_3 (TimeDi  (None, 16, 56, 56, 64)    18496     
+ stributed)                                                      
+                                                                 
+ time_distributed_4 (TimeDi  (None, 16, 56, 56, 64)    256       
+ stributed)                                                      
+                                                                 
+ time_distributed_5 (TimeDi  (None, 16, 28, 28, 64)    0         
+ stributed)                                                      
+                                                                 
+ time_distributed_6 (TimeDi  (None, 16, 28, 28, 128)   73856     
+ stributed)                                                      
+                                                                 
+ time_distributed_7 (TimeDi  (None, 16, 28, 28, 128)   512       
+ stributed)                                                      
+                                                                 
+ time_distributed_8 (TimeDi  (None, 16, 128)           0         
+ stributed)                                                      
+                                                                 
+ time_distributed_9 (TimeDi  (None, 16, 256)           33024     
+ stributed)                                                      
+                                                                 
+ lstm_2 (LSTM)               (None, 16, 64)            82176     
+                                                                 
+ lstm_3 (LSTM)               (None, 32)                12416     
+                                                                 
+ dropout_1 (Dropout)         (None, 32)                0         
+                                                                 
+ dense_2 (Dense)             (None, 1)                 33        
+                                                                 
+=================================================================
+Total params: 221793 (866.38 KB)
+Trainable params: 221345 (864.63 KB)
+Non-trainable params: 448 (1.75 KB)
+_________________________________________________________________

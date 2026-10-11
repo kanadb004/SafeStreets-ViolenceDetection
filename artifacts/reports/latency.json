@@ -1,0 +1,44 @@
+{
+  "batch_size": 1,
+  "cpu_count": 8,
+  "loadavg_after": [
+    3.1298828125,
+    2.09228515625,
+    2.09423828125
+  ],
+  "loadavg_before": [
+    1.71142578125,
+    1.7314453125,
+    1.974609375
+  ],
+  "machine": "arm64",
+  "max_ms": 306.18679197505116,
+  "mean_ms": 114.15347844401064,
+  "measured_utc": "2026-10-10T10:09:14.786033+00:00",
+  "min_ms": 80.9205420082435,
+  "model_version": "finetuned_airtlab-73ebf22e032d",
+  "n_iterations": 300,
+  "onnxruntime_version": "1.18.1",
+  "p50_ms": 111.08408297877759,
+  "p95_ms": 134.4110997801181,
+  "p99_ms": 167.90224448777735,
+  "platform": "macOS-15.7.9-arm64-arm-64bit",
+  "providers": [
+    "CPUExecutionProvider"
+  ],
+  "realtime_headroom": 18.599654374450676,
+  "seed": 1265,
+  "stride": 8,
+  "sustainable_fps": 59.51889399824217,
+  "sustainable_fps_formula": "stride * 1000 / p95_ms (sampled frames per second)",
+  "target_fps": 3.2,
+  "warmup": 20,
+  "what": "InferenceEngine.predict_windows on one window: MobileNetV2 x16 frames + LSTM head, onnxruntime CPUExecutionProvider. Excludes video decode and letterbox.",
+  "window_shape": [
+    16,
+    112,
+    112,
+    3
+  ],
+  "windows_per_s_at_p95": 7.439861749780271
+}

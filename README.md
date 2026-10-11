@@ -121,6 +121,19 @@ attribution modules, limitations.
   `REPRODUCE.md`, `PRESENTATION_GUIDE.md`, `PROGRESS.md` (sprint-by-sprint evidence log)
 - `tests/` — `pytest -m phaseN` / `pytest -m sprintN` per `Makefile`'s `verify` target
 
+## What is committed, and what is regenerated
+
+Committed, so every number in `docs/RESULTS.md` and the table above traces to a file in this
+repository rather than to a claim: `artifacts/reports/*.json` (all evaluation, parity, latency,
+and training histories), `artifacts/figures/*.png`, `artifacts/model_summary_*.txt`, and
+`artifacts/optuna/study.db` (the full 30-trial study, so `notebooks/05` loads it live).
+
+Not committed, because they are large and regenerable: `artifacts/checkpoints/` (29 MB of Keras
+weights), `artifacts/onnx/` (11 MB), and `artifacts/weights/yolov8n.pt` (fetched by
+`ultralytics`). The datasets themselves (`data/`, 7.4 GB) are likewise not committed; they are
+fetched by `scripts/fetch_data.py`. `docs/REPRODUCE.md` gives the command sequence that rebuilds
+all of it in order, so a clone needs the datasets before the notebooks that score clips will run.
+
 ## Known legacy defects (fixed in Sprint 5)
 
 The original `app/` package could not serve a request (`predict_video` did not exist) and the

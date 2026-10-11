@@ -1,0 +1,44 @@
+{
+  "rows": [
+    {
+      "auc_drop_vs_in_domain": null,
+      "in_domain": true,
+      "n": 272,
+      "roc_auc": 0.9805099886308266,
+      "roc_auc_ci95": [
+        0.9677052427585964,
+        0.9915633257462784
+      ],
+      "split": "test",
+      "test_dataset": "rlvs"
+    },
+    {
+      "auc_drop_vs_in_domain": 0.454584,
+      "in_domain": false,
+      "n": 48,
+      "roc_auc": 0.5259259259259259,
+      "roc_auc_ci95": [
+        0.35555338541666665,
+        0.700004743833017
+      ],
+      "split": "test",
+      "test_dataset": "airtlab"
+    },
+    {
+      "auc_drop_vs_in_domain": -0.01949,
+      "in_domain": false,
+      "n": 5,
+      "roc_auc": 1.0,
+      "roc_auc_ci95": [
+        1.0,
+        1.0
+      ],
+      "split": "test",
+      "test_dataset": "ucfcrime"
+    }
+  ],
+  "train_datasets": [
+    "rwf2000",
+    "rlvs"
+  ]
+}

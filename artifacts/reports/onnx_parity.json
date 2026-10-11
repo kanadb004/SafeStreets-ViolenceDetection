@@ -1,0 +1,29 @@
+{
+  "auc_passed": true,
+  "auc_tolerance": 0.005,
+  "datasets": [
+    "rlvs",
+    "airtlab",
+    "ucfcrime"
+  ],
+  "feature_store_head_max_abs_diff": 2.086162567138672e-06,
+  "git_sha": "d8b8335c2c63a194687326504ce527536673f833",
+  "keras_devices": [
+    "/device:CPU:0",
+    "/device:GPU:0"
+  ],
+  "max_abs_diff": 5.24371862411499e-05,
+  "mean_abs_diff": 1.2179865286900448e-06,
+  "model_version": "finetuned_airtlab-73ebf22e032d",
+  "n_clips": 325,
+  "n_positive": 175,
+  "note": "Runtime parity check (same model, tf_keras vs onnxruntime), not a generalisation estimate: the AIRTLab test clips were part of the ADR-005 fine-tune pool, so these AUCs are optimistic for AIRTLab.",
+  "onnx_file": "artifacts/onnx/safestreets_finetuned_airtlab.onnx",
+  "p99_abs_diff": 1.906752586364744e-05,
+  "parity_passed": true,
+  "roc_auc_abs_diff": 0.0,
+  "roc_auc_keras": 0.9691047619047619,
+  "roc_auc_onnx": 0.9691047619047619,
+  "split": "test",
+  "tolerance": 0.0001
+}
