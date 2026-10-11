@@ -1,19 +1,49 @@
 # SafeStreets
 
-A real-time violence-detection pipeline (CNN-LSTM) built for a women's-safety CCTV context: it
-scores short video clips for violence, raises an alert, and attaches person/gender attribution as
-an alert *priority* signal, never as a gate on whether the alert fires. Specified by
-`DA1_Report_23BCE1265.pdf`; built per `docs/BUILD_PLAN.md` (Phases 0-3) and
-`docs/SPRINT_PLAN.md` (Sprints 1-6, which supersede Phases 4-11 under a 1 to 1.5 day deadline).
+**Real-time violence detection for CCTV, built for a women's-safety context.**
+
+SafeStreets scores short segments of video for physical violence and raises an alert when a
+sustained rise in score crosses a calibrated threshold. It runs on CPU at roughly 18x real time,
+so a single commodity machine can watch a live camera feed without a GPU.
+
+[![CI](https://github.com/kanadb004/SafeStreets-ViolenceDetection/actions/workflows/ci.yml/badge.svg)](https://github.com/kanadb004/SafeStreets-ViolenceDetection/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.11-blue)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-2.16-orange)
+![ONNX Runtime](https://img.shields.io/badge/ONNX%20Runtime-1.18-lightgrey)
 
 ![Architecture](artifacts/figures/architecture.png)
 
+---
+
+## Overview
+
+Most violence-detection research reports a single accuracy number on a single dataset. That number
+tends to collapse in deployment, for two reasons this project treats as first-class problems:
+
+1. **Dataset leakage.** Public violence datasets slice long source videos into many short clips.
+   Split those clips at random and near-duplicate siblings land on both sides of the split,
+   inflating every metric. SafeStreets splits on a derived `group_id` so all clips from one source
+   video stay in the same partition, and asserts the partitions are disjoint on every run.
+2. **Domain shift.** A model trained on organic street-fight footage does not transfer to staged,
+   fixed-camera indoor footage. This repository measures that drop instead of hiding it, and ships
+   a fine-tuned checkpoint that recovers it.
+
+The system is a two-stage pipeline. A frozen ImageNet-pretrained **MobileNetV2** encodes each frame
+into a 1280-dimensional embedding; a small **stacked LSTM** reads the 16-frame sequence and outputs
+`P(violence)`. Serving bundles both stages into one ONNX graph.
+
+An optional attribution stage runs person detection and tracking over an alerting clip and labels
+each track, so an operator can triage which alerts to look at first. It is strictly advisory:
+**attribution can never create or suppress an alert**, only annotate one that already fired.
+
+---
+
 ## Results
 
-Combined RLVS + AIRTLab + UCF-Crime test split (n=325), Sprint 1/2 baseline checkpoint, threshold
-0.2000 (F1-optimal, selected on validation). Full tables, cross-dataset numbers, the HPO
-comparison, and the AIRTLab fine-tune in `docs/RESULTS.md`; this table is generated from the same
-committed artefacts and must match it exactly.
+Held-out test split, 325 clips from three datasets, operating threshold 0.2 selected on validation.
+95% confidence intervals are from 1,000 bootstrap resamples. Every number below is generated from
+a committed artifact under `artifacts/reports/`, and the full tables are in
+[`docs/RESULTS.md`](docs/RESULTS.md).
 
 | Metric | Value | 95% CI |
 |---|---|---|
@@ -24,118 +54,293 @@ committed artefacts and must match it exactly.
 | Recall | 0.9543 | [0.9191, 0.9828] |
 | F1 | 0.8930 | [0.8595, 0.9260] |
 
-The **shipped** checkpoint is fine-tuned further on AIRTLab (`docs/decisions/ADR-005-finetune-and-attribution.md`):
-AIRTLab 5-fold CV ROC-AUC 0.8976 +/- 0.0429 (up from 0.5259 zero-shot), at a measured cost of
-0.0582 ROC-AUC on RWF-2000. ONNX serving: parity max abs diff 5.24e-05 against Keras, p95 latency
-134.41 ms/window, 59.5 sustainable fps on CPU only (no GPU/CUDA), 18.6x real-time headroom.
+Recall is deliberately favoured over precision: a missed assault costs more than a false alarm an
+operator dismisses in two seconds.
 
-## Quickstart
+### Cross-domain transfer
+
+Evaluated zero-shot on AIRTLab, a staged fixed-camera dataset unlike anything in training, the
+model scores **0.5259 ROC-AUC, which is close to chance.** Fine-tuning on AIRTLab with 5-fold
+grouped cross-validation lifts it to **0.8976 +/- 0.0429**, at a measured cost of 0.0582 ROC-AUC on
+the original RWF-2000 distribution. The fine-tuned checkpoint is the one that ships, and both
+numbers are reported because the trade-off is real.
+
+### Serving performance
+
+Measured over 300 iterations on an Apple M2 (8 cores, CPU only, no GPU or CUDA):
+
+| | |
+|---|---|
+| Latency per 16-frame window | **111 ms** p50, 134 ms p95, 168 ms p99 |
+| Sustainable throughput | **59.5 sampled frames/s**, 18.6x real time |
+| TensorFlow vs ONNX Runtime agreement | 5.24e-05 max absolute difference over 325 clips, identical ROC-AUC |
+
+---
+
+## How it works
+
+| Stage | What happens |
+|---|---|
+| **Ingest** | OpenCV decodes video and subsamples to 3.2 fps, so a 16-frame window spans the same ~5 s of wall-clock time the model saw in training, regardless of source frame rate. |
+| **Preprocess** | Frames resized to 112x112, normalised with MobileNetV2's `preprocess_input`, padded or uniformly sampled to exactly 16 frames. |
+| **Augment** | Albumentations transforms drawn **once per clip** and replayed identically across its frames, so motion is never corrupted by per-frame jitter. |
+| **Encode** | Frozen MobileNetV2 (`trainable=False`, global average pooling) maps each frame to 1280 features. Embeddings are precomputed and cached, making head training and hyperparameter search inexpensive. |
+| **Classify** | A stacked LSTM with dropout reads the 16x1280 sequence and emits `P(violence)`. Trained with class-weighted binary cross-entropy. |
+| **Score a stream** | A sliding window with stride 8 produces per-window scores, smoothed by an exponential moving average, with a hysteresis band around the threshold so a score oscillating at the boundary yields one alert rather than a burst. |
+| **Attribute** | On an alerting clip, YOLOv8n plus ByteTrack recovers stable person tracks and a zero-shot CLIP classifier labels each one, for alert triage only. |
+
+A from-scratch TimeDistributed CNN-LSTM is also implemented and trained as a comparison baseline;
+see [`docs/RESULTS.md`](docs/RESULTS.md) for how it comes out against the frozen-encoder design, and
+[`docs/decisions/`](docs/decisions/) for the reasoning behind the architecture, split strategy, and
+deployment target.
+
+---
+
+## Installation
+
+Requires Python 3.11. Apple silicon uses the `tensorflow-macos` and `tensorflow-metal` wheels
+pinned in the `ml` extra; on Linux, install plain `tensorflow==2.16.2` instead.
 
 ```bash
-conda create -n safestreets --clone tf_env   # do not build the env from scratch, see CLAUDE.md
-conda activate safestreets
-pip install -e ".[dev]"
-pip install pandas pyarrow pyyaml flask pytest ruff opencv-python-headless \
-  albumentations optuna mlflow onnx onnxruntime tf2onnx ultralytics open_clip_torch
+git clone https://github.com/kanadb004/SafeStreets-ViolenceDetection.git
+cd SafeStreets-ViolenceDetection
 
-make verify-all      # ruff + full pytest suite
-make notebooks        # executes all six notebooks/*.ipynb in place
-
-python -c "from safestreets.web import create_app; create_app().run(port=5000)"
-# -> http://127.0.0.1:5000  (upload a short clip, get a verdict and a per-window timeline)
+python -m venv .venv && source .venv/bin/activate   # or conda create -n safestreets python=3.11
+pip install -e ".[dev,ml]"
 ```
 
-Full command sequence from a clean clone, every sprint in order: `docs/REPRODUCE.md`.
+Verify the install:
 
-## The six notebooks
+```bash
+make verify-all      # ruff lint + the full test suite
+```
 
-Each is thin: it imports from `safestreets/`, calls it, displays the result; no copy-pasted
-implementation in a cell. Run individually or via `make notebooks`.
+---
 
-| Notebook | Covers |
+## Usage
+
+### Web application
+
+```bash
+python -c "from safestreets.web import create_app; create_app().run(port=5000)"
+```
+
+Open `http://127.0.0.1:5000`, upload a clip, and get a verdict, a clip-level score, and a
+per-window timeline showing where the score crossed the alert band. `GET /healthz` reports the
+loaded model version and operating threshold.
+
+### JSON API
+
+```bash
+curl -F "video=@clip.mp4" http://127.0.0.1:5000/api/analyse
+```
+
+Abridged real response (`windows` holds one entry per sliding window):
+
+```json
+{
+  "clip_score": 0.8565809726715088,
+  "verdict": "violent",
+  "threshold": 0.2,
+  "enter_threshold": 0.25,
+  "leave_threshold": 0.15000000000000002,
+  "alert_events": 1,
+  "n_frames_decoded": 30,
+  "fps": 30.0,
+  "frame_step": 9,
+  "padded": false,
+  "short_video": true,
+  "windows": [
+    {
+      "index": 0,
+      "start_frame": 0,
+      "end_frame": 29,
+      "raw_score": 0.8565809726715088,
+      "smoothed_score": 0.8565809726715088,
+      "alert_active": true,
+      "alert_started": true,
+      "start_s": 0.0,
+      "end_s": 0.967
+    }
+  ],
+  "model_version": "finetuned_airtlab-73ebf22e032d"
+}
+```
+
+`enter_threshold` and `leave_threshold` are the hysteresis band; `alert_events` counts rising
+edges of the smoothed alert latch. Errors return `{"error": "..."}` with status 400 (no file),
+413 (too large), or 415 (unsupported extension or undecodable video).
+
+### Python
+
+```python
+from safestreets.inference.engine import InferenceEngine
+
+engine = InferenceEngine()                 # bundled ONNX graph, paths from configs/
+print(engine.model_version)                # "finetuned_airtlab-73ebf22e032d"
+
+score = engine.score_clip("clip.mp4")      # clip-level P(violence)
+print(score, engine.verdict(score))        # 0.857 "violent"
+
+result = engine.analyse_video("clip.mp4")  # score plus the full window timeline
+for w in result["windows"]:
+    print(w["index"], w["smoothed_score"], w["alert_active"])
+```
+
+The engine refuses to load an ONNX graph whose sidecar contract disagrees with the active
+preprocessing config, so a model can never be served under settings it was not exported for.
+
+`InferenceEngine` runs entirely on ONNX Runtime and imports no TensorFlow, so serving does not need
+the training stack installed.
+
+### Command line
+
+Each stage is a script with `--help`:
+
+```bash
+python scripts/fetch_data.py       --dataset all     # download sources, build manifests and splits
+python scripts/build_cache.py                        # decode to a fixed-size clip cache
+python scripts/extract_features.py --dataset all     # precompute frozen MobileNetV2 embeddings
+python scripts/train.py            --arch lstm_head  # train the classifier head
+python scripts/evaluate.py                           # metrics, figures, cross-dataset matrix
+python scripts/tune.py             --trials 30       # Optuna hyperparameter search
+python scripts/finetune.py                           # grouped k-fold fine-tune on AIRTLab
+python scripts/export_onnx.py                        # bundle encoder + head into one ONNX graph
+```
+
+All tunables live in `configs/*.yaml`, including the random seed (1265), so runs are
+reproducible without passing flags. Dataset download uses the
+[Kaggle CLI](https://github.com/Kaggle/kaggle-api) and needs API credentials configured first.
+
+---
+
+## Notebooks
+
+Six notebooks walk through the pipeline end to end. Each imports from the `safestreets` package
+rather than reimplementing it, and executes in under a minute with outputs committed.
+
+| Notebook | Contents |
 |---|---|
-| `notebooks/01_data_and_preprocessing.ipynb` | the five candidate sources (one skipped), group-aware splits, the leakage assertion, the clip cache |
-| `notebooks/02_augmentation.ipynb` | clip-consistent Albumentations, a live identical-frames proof, before/after grid, throughput |
-| `notebooks/03_model_and_training.ipynb` | both architectures, the frozen-feature decision with its measurements, training curves, TensorBoard, MLflow |
-| `notebooks/04_evaluation.ipynb` | metrics with bootstrap CIs, ROC/PR/confusion, threshold sweep, cross-dataset table |
-| `notebooks/05_hpo_and_finetune.ipynb` | the Optuna study, why the tuned model doesn't ship, the AIRTLab 5-fold fine-tune, forgetting check |
-| `notebooks/06_inference_and_demo.ipynb` | attribution with the fail-safe invariant proven live, ONNX parity/latency, a real sliding-window score, the Flask app |
+| [`01_data_and_preprocessing`](notebooks/01_data_and_preprocessing.ipynb) | Sources and licences, group-aware splitting, the leakage assertion, the clip cache |
+| [`02_augmentation`](notebooks/02_augmentation.ipynb) | Clip-consistent augmentation with a live proof that frames stay in sync, plus throughput |
+| [`03_model_and_training`](notebooks/03_model_and_training.ipynb) | Both architectures, the frozen-encoder measurements, training curves, TensorBoard histograms |
+| [`04_evaluation`](notebooks/04_evaluation.ipynb) | Metrics with bootstrap CIs, ROC/PR/confusion, threshold sweep, cross-dataset matrix |
+| [`05_hpo_and_finetune`](notebooks/05_hpo_and_finetune.ipynb) | The Optuna study, checkpoint selection, AIRTLab fine-tuning and the forgetting check |
+| [`06_inference_and_demo`](notebooks/06_inference_and_demo.ipynb) | Attribution and its fail-safe invariant, ONNX parity and latency, streaming scoring, the web app |
 
-A suggested walkthrough order and talking points for presenting these live:
-`docs/PRESENTATION_GUIDE.md`.
-
-## Architecture
-
-Frozen MobileNetV2 (ImageNet) feature extraction, precomputed once, feeding a two-layer LSTM head
-(the shipped production model); the literal report §4.3 TimeDistributed CNN-LSTM is also built and
-trained as a trained-from-scratch comparison arm. See
-`docs/decisions/ADR-003-architecture.md` for the measured reasoning (8.7 min/epoch end to end vs.
-under 2 hours total frozen-feature, which is what makes a six-sprint, 1 to 1.5 day deadline
-possible at all).
-
-Serving bundles the frozen backbone and the fine-tuned head into one ONNX graph, run on CPU-only
-ONNX Runtime behind Flask, no TensorFlow import at serve time (`docs/decisions/ADR-006-deployment-target.md`).
+---
 
 ## Datasets
 
-RWF-2000, RLVS, AIRTLab (women's-safety-specific fine-tuning), and a UCF-Crime subset, all
-group-aware split so sibling clips from one source video never cross train/val/test
-(`docs/decisions/ADR-002-dataset-splits.md`). XD-Violence was evaluated and permanently skipped:
-its only accessible distribution is 38.3 GB, far over this project's ~44 GB disk budget. Full
-provenance, licences, and citations: `docs/DATASETS.md`.
+| Dataset | Clips | Role | Licence |
+|---|---|---|---|
+| [RWF-2000](https://github.com/mchengny/RWF2000-Video-Database-for-Violence-Detection) | 2,000 | Primary training distribution, organic surveillance footage | Research and education use |
+| [RLVS](https://www.kaggle.com/datasets/mohamedmustafa/real-life-violence-situations-dataset) | 1,951 | Primary training and test distribution | CC0 / public domain |
+| [AIRTLab](https://github.com/airtlab/A-Dataset-for-Automatic-Violence-Detection-in-Videos) | 350 | Domain-shift evaluation and fine-tuning target | Research and education use |
+| UCF-Crime (subset) | 35 | Cross-domain spot check | Research use |
 
-## Ethics
+4,336 clips in total across 3,873 source-video groups. Datasets are **not** redistributed here;
+`scripts/fetch_data.py` retrieves them from their original hosts. Full provenance, access methods,
+citations, and label balance are in [`docs/DATASETS.md`](docs/DATASETS.md).
 
-Person detection and gender attribution exist only to label an already-fired alert's *priority*;
-they can never suppress or create an alert (`safestreets/attribution/pipeline.py:build_alert`,
-enforced by construction). The gender module is zero-shot CLIP, not fit to any labelled data, and
-its accuracy is explicitly unmeasured, not measured-and-good: see `docs/ETHICS.md` for the full
-discussion, including why this is reported as a qualitative check rather than an accuracy claim.
+Frame-level temporal localisation on untrimmed video is out of scope: the dataset that would
+support it (XD-Violence) is 38.3 GB, beyond this project's storage budget.
 
-## Model card
+---
 
-`docs/MODEL_CARD.md` — intended use, out-of-scope use, training data and licences, metrics,
-attribution modules, limitations.
+## Project structure
 
-## Known limitations of this build
+```
+safestreets/          # the library every script and notebook calls into
+  data/               # download, manifests, group-aware splits, preprocessing, augmentation
+  features/           # frozen-encoder embedding extraction and caching
+  models/             # architectures and the config-driven model factory
+  training/           # training loop, callbacks, losses, HPO, fine-tuning
+  evaluation/         # metrics with bootstrap CIs, cross-dataset matrix, report generation
+  attribution/        # person detection, tracking, track labelling, fail-safe alert assembly
+  inference/          # ONNX export, inference engine, sliding-window stream scorer
+  web/                # Flask application, JSON API, upload handling
+scripts/              # one command per pipeline stage
+configs/              # all tunables as YAML
+notebooks/            # the six walkthrough notebooks
+tests/                # pytest suite, 143 tests
+docs/                 # results, model card, ethics, datasets, reproduction, design decisions
+```
 
-- Frame-level AUC on untrimmed video is out of scope (XD-Violence skipped; the UCF-Crime subset
-  is 35 clips, too small on its own).
-- The scratch CNN-LSTM comparison arm trained for 12 epochs only (scaled down, not a tuned run).
-- The Optuna-tuned head did not beat the Sprint 1 baseline on test; the baseline ships
-  (`docs/decisions/ADR-004-hpo.md`).
-- The AIRTLab fine-tune that ships costs 0.0582 ROC-AUC on RWF-2000 (`docs/decisions/ADR-005-finetune-and-attribution.md`).
-- A Docker image and fresh-clone CI reproduction were cut for this deadline; `make verify-all &&
-  make notebooks` is the covered substitute. See `docs/SPRINT_PLAN.md` §2 for the full cut list.
+---
 
-## Repository layout
+## Development
 
-- `safestreets/` — the package every notebook and script calls into (data, features, models,
-  training, evaluation, attribution, inference, web)
-- `scripts/` — one-shot CLI entry points (`docs/REPRODUCE.md` lists them in run order)
-- `configs/*.yaml` — every tunable lives here, never as a Python literal
-- `notebooks/` — the six submission notebooks (`notebooks/legacy/` is the superseded Colab
-  reference notebook, kept for history only)
-- `docs/` — `BUILD_PLAN.md` (full original scope), `SPRINT_PLAN.md` (the plan actually executed),
-  `decisions/` (ADRs), `RESULTS.md`, `MODEL_CARD.md`, `ETHICS.md`, `DATASETS.md`,
-  `REPRODUCE.md`, `PRESENTATION_GUIDE.md`, `PROGRESS.md` (sprint-by-sprint evidence log)
-- `tests/` — `pytest -m phaseN` / `pytest -m sprintN` per `Makefile`'s `verify` target
+```bash
+make lint             # ruff
+make test             # fast tests only, skips those needing downloaded datasets
+make verify-all       # lint + the full suite
+make notebooks        # re-execute every notebook in place
+```
 
-## What is committed, and what is regenerated
+CI runs lint and the dataset-independent tests on every push and pull request.
 
-Committed, so every number in `docs/RESULTS.md` and the table above traces to a file in this
-repository rather than to a claim: `artifacts/reports/*.json` (all evaluation, parity, latency,
-and training histories), `artifacts/figures/*.png`, `artifacts/model_summary_*.txt`, and
-`artifacts/optuna/study.db` (the full 30-trial study, so `notebooks/05` loads it live).
+### What is committed
 
-Not committed, because they are large and regenerable: `artifacts/checkpoints/` (29 MB of Keras
-weights), `artifacts/onnx/` (11 MB), and `artifacts/weights/yolov8n.pt` (fetched by
-`ultralytics`). The datasets themselves (`data/`, 7.4 GB) are likewise not committed; they are
-fetched by `scripts/fetch_data.py`. `docs/REPRODUCE.md` gives the command sequence that rebuilds
-all of it in order, so a clone needs the datasets before the notebooks that score clips will run.
+Committed, so every published number traces to a file in this repository: all evaluation, parity,
+latency and training-history JSON under `artifacts/reports/`, the figures, the model summaries, and
+the Optuna study database.
 
-## Known legacy defects (fixed in Sprint 5)
+Not committed, because they are large and reproducible: model checkpoints (29 MB), the exported
+ONNX graph (11 MB), third-party detector weights, and the datasets themselves (7.4 GB).
+[`docs/REPRODUCE.md`](docs/REPRODUCE.md) gives the command sequence that rebuilds all of it from a
+clean clone, with pinned versions and fixed seeds.
 
-The original `app/` package could not serve a request (`predict_video` did not exist) and the
-original template discarded the model's prediction. Both are fixed; `app/` was deleted and
-replaced by `safestreets/web`. Full list in `CLAUDE.md`.
+---
+
+## Responsible use
+
+This is a research prototype and a screening aid. It is not a decision-making system, and it should
+not be used to make consequential judgements about people without human review.
+
+- **The fail-safe invariant.** An alert is computed from the violence score alone, before any
+  attribution output is read. Person and gender attribution can only annotate an alert's priority;
+  they cannot gate it. This is enforced by the structure of `safestreets/attribution/pipeline.py`
+  and covered by a test that forces the adversarial case.
+- **The attribution stage is unvalidated.** Its gender classifier is zero-shot, fit to no labelled
+  data, and no dataset here carries person-level gender ground truth, so **its accuracy is
+  unmeasured, not measured and good.** Treat its output as a weak triage hint only.
+- **Known limitations** are documented rather than minimised: cross-domain performance drops
+  sharply without fine-tuning, the shipped fine-tune costs accuracy on the original distribution,
+  the operating threshold was calibrated for the pre-fine-tune checkpoint, and latency figures come
+  from one machine under its own load.
+
+Full discussion in [`docs/ETHICS.md`](docs/ETHICS.md) and
+[`docs/MODEL_CARD.md`](docs/MODEL_CARD.md), which covers intended use, out-of-scope use, training
+data, and every limitation above.
+
+---
+
+## Documentation
+
+| Document | Contents |
+|---|---|
+| [`docs/RESULTS.md`](docs/RESULTS.md) | Every metric, generated from committed artifacts |
+| [`docs/MODEL_CARD.md`](docs/MODEL_CARD.md) | Intended use, training data, metrics, limitations |
+| [`docs/ETHICS.md`](docs/ETHICS.md) | Attribution risks, the fail-safe design, what is unmeasured |
+| [`docs/DATASETS.md`](docs/DATASETS.md) | Provenance, licences, citations, label balance |
+| [`docs/REPRODUCE.md`](docs/REPRODUCE.md) | Full rebuild from a clean clone |
+| [`docs/decisions/`](docs/decisions/) | Design decisions and the measurements behind them |
+
+---
+
+## Citation
+
+If you use this code, please also cite the dataset authors, whose work this depends on. Citations
+for all four datasets are in [`docs/DATASETS.md`](docs/DATASETS.md).
+
+Built with [TensorFlow](https://www.tensorflow.org/), [Keras](https://keras.io/),
+[ONNX Runtime](https://onnxruntime.ai/), [Albumentations](https://albumentations.ai/),
+[Optuna](https://optuna.org/), [MLflow](https://mlflow.org/),
+[Ultralytics YOLO](https://docs.ultralytics.com/), and [OpenCLIP](https://github.com/mlfoundations/open_clip).
+
+## Licence
+
+No licence has been declared for this repository yet, so no usage rights are granted by default.
+The datasets it consumes are released for research and education use under their own terms, which
+this project does not relicense or redistribute.
