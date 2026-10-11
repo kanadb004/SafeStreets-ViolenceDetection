@@ -10,6 +10,7 @@ so a single commodity machine can watch a live camera feed without a GPU.
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-2.16-orange)
 ![ONNX Runtime](https://img.shields.io/badge/ONNX%20Runtime-1.18-lightgrey)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 ![Architecture](artifacts/figures/architecture.png)
 
@@ -341,6 +342,9 @@ Built with [TensorFlow](https://www.tensorflow.org/), [Keras](https://keras.io/)
 
 ## Licence
 
-No licence has been declared for this repository yet, so no usage rights are granted by default.
-The datasets it consumes are released for research and education use under their own terms, which
-this project does not relicense or redistribute.
+Released under the [MIT License](LICENSE). Copyright (c) 2026 Kanad Bhattacharya.
+
+The licence covers this repository's own code and documentation. The datasets it consumes are
+released for research and education use under their own separate terms, which this project does
+not relicense or redistribute, and the pretrained weights it downloads at runtime carry their
+upstream licences.
